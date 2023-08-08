@@ -1,0 +1,16 @@
+.introduce-navbar {
+    background-image: url(../../img/xdu/xd_sunsetting.jpg);
+    background-repeat: no-repeat;
+    background-size: 100%;
+}
+
+.introduce-hero{
+    background-image: url(../../img/inbetweening/change_bg1.svg);
+}
+
+
+body::before{
+    display: block;
+    content: '';
+    height: 40px;
+}

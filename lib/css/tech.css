@@ -1,0 +1,17 @@
+.tech-navbar , .tech-about{
+    background-image: url(../../img/inbetweening/change_bg3.svg);
+}
+
+body::before{
+    display: block;
+    content: '';
+    height: 80px;
+}
+
+
+
+
+
+.tech-web{
+    background-image: url(../../img/inbetweening/change_bg6.svg);
+}

@@ -1,0 +1,13 @@
+.operate-navbar{
+    background-image: url(../../img/inbetweening/change_bg7.svg);
+}
+
+body::before{
+    display: block;
+    content: '';
+    height: 80px;
+}
+
+.operate-get{
+    background-image: url(../../img/inbetweening/change_bg8.svg);
+}
