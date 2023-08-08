@@ -1,6 +1,6 @@
 name: auto_deploy
 on:
-  pull_request:
+  [push,pull_request]:
     branches:
       - main 
 jobs:
