@@ -1,7 +1,29 @@
-# Website
-存放俱乐部网站代码、图片文件仓库
+# ISC
 
-## 使用技术
-1. 主要是html、css、js的基础知识，js基本没有需要手动写的地方
-2. 基于框架BootStrap实现
-3. 除西电和浪潮相关图片外，其余图标和插画均从阿里巴巴矢量图标库获取
+This template should help get you started developing with Vue 3 in Vite.
+
+## Recommended IDE Setup
+
+[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur) + [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin).
+
+## Customize configuration
+
+See [Vite Configuration Reference](https://vitejs.dev/config/).
+
+## Project Setup
+
+```sh
+npm install
+```
+
+### Compile and Hot-Reload for Development
+
+```sh
+npm run dev
+```
+
+### Compile and Minify for Production
+
+```sh
+npm run build
+```
