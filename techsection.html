@@ -383,10 +383,10 @@
 
     </section>
 
-    <!-- ctf组 -->
-    <section class="tech-ctf p-4 bg-dark"
-        style="background-image: url(img/inbetweening/ctf-bg.gif); background-repeat: no-repeat; background-size: cover;">
-        <div class="container">
+    <!-- 系统组 -->
+    <section class="tech-sys p-4 bg-dark" style="position: relative; left: 0; top: 0;">
+        <canvas id="canvas"></canvas>
+        <div class="container" style="position: absolute; left: 0; top: 5%">
             <div class="text-light text-center">
                 <h2>系统组</h2>
                 <hr>
@@ -464,6 +464,111 @@
                 </div>
             </div>
         </div>
+        <script>
+            /* 获取画布 */
+            var canvas = document.querySelector("#canvas");
+            var ctx = canvas.getContext('2d');
+            /* 定义一个字符串数组，后面字符串会从里随机选值 */
+            var text = "10101010101010QWERTYUIOPASDFGHJKLZXCVBNM!@#$%^&*{}[]";
+            /* 定义 w为窗口宽度，h为窗体高度 */
+            var w=window.innerWidth;
+            var h=window.innerHeight / 1.7;
+            /* 设置len为20，其为背景里每条字符串的长度 */
+            var len = 10;
+            /* 设置num为100，窗口一共显示100条字符串 */
+            var num = 80;
+            /* 定义数组，里面存取每条字符串的字符与位置 */
+            var arr=[];
+            /* 画布宽等于窗口宽 */
+            canvas.width=window.innerWidth;
+            /* 画布高等于窗口高 */
+            canvas.height=window.innerHeight / 1.7;
+            /* 绑定窗口大小发生改变事件，重新绘制字符串数组，让canvas随时铺满浏览器可视区 */
+            window.onresize=resizeCanvas;
+            function resizeCanvas(){
+                w=canvas.width=window.innerWidth;
+                h=canvas.height=window.innerHeight / 1.7;
+                /* 重新给全部字符串赋值 */
+                for(let j=0;j<num;j++){
+                        arr[j]={
+                            str:[],
+                    x: parseInt(w*Math.random()),
+                    y: parseInt(h*Math.random()-150)
+                        }
+                    }
+                }       
+            resizeCanvas();
+            /* 初始化字符串数组 */
+            for(let i=0;i<num;i++){
+                /* 用.push方法给arr数组添加值 */
+                arr.push({
+                    /* 字符先为空 */
+                    str:[],
+                    /* x轴位置为窗口宽度乘上一个0带1的随机数 */
+                    x: parseInt(w*Math.random()),
+                    /* y轴位置为窗口高度乘上一个0带1的随机数，再减个150把，可以为负数 */
+                    y: parseInt(h*Math.random()-150)
+                })
+            }
+
+            /* 绘制每条字符串 */
+            function txt(){
+                /* 给个循环，共绘制num条 */
+                for(let i=0;i<num;i++){
+                    /* 设置变量letter为当前arr数组里的第i条字符串 */
+                    var letter = arr[i];
+                    /* 让字符串的字符为空 */
+                    letter.str = [];
+                    /* 给个循环，一个字符一个字符的拼接成字符串 */
+                    for(let k=0;k<len;k++){
+                        /* 随机选取text里的一个字符 */
+                        letter.str.push(text[Math.floor(Math.random() * text.length)]);
+                    }
+                    /* 再来循环，开始绘制渲染字符串的每个字符 */
+                    for(let j=0;j<len;j++){
+                        if(j==len-1){
+                            /* 第一个字符为白色 */
+                            ctx.fillStyle = `rgb(255, 255, 255)`;
+                        }else{
+                            /* 后面的为绿色，慢慢变不透明 */
+                            ctx.fillStyle = `rgba(0, 255, 21,${j*0.15})`;
+                        } 
+                            /* 渲染字符 */
+                        ctx.font = "20px FangSong";
+                        ctx.fillText(letter.str[j],letter.x,letter.y+j*15);
+                    }
+                }
+                /* 调用更新 */
+                move();
+            }
+            
+            /* 让字符串移动，若某字符串出了可视区，则重新生成 */
+            function move(){
+                /* 来个循环，给全部字符串更新位置 */
+                for(let j=0;j<num;j++){
+                    /* y轴位置加3 */
+                    arr[j].y=arr[j].y+3;
+                    /* 如果改字符已经走出窗口了重新赋值 */
+                    if(arr[j].y>=h){
+                        arr[j]={
+                            str:[],
+                    x: parseInt(w*Math.random()),
+                    y: parseInt(h*Math.random()-150)
+                        }
+                    }
+                }
+            }
+
+            setInterval(function(){
+                /* 清屏 */
+                ctx.clearRect(0,0,w,h);
+                /* 渲染 */
+                move();
+                /* 更新 */
+                txt();
+            },50); 
+
+        </script>
         </div>
     </section>
 
