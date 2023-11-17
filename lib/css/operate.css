@@ -1,5 +1,6 @@
 .operate-navbar{
     background-image: url(../../img/inbetweening/change_bg7.svg);
+    background-repeat: no-repeat;
 }
 
 body::before{
@@ -10,4 +11,5 @@ body::before{
 
 .operate-get{
     background-image: url(../../img/inbetweening/change_bg8.svg);
+    background-repeat: no-repeat;
 }

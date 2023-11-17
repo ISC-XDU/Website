@@ -1,5 +1,6 @@
 .member-navbar , .member-show{
     background-image: url(../../img/inbetweening/change_bg4.svg);
+    background-repeat: no-repeat;
 }
 
 body::before{

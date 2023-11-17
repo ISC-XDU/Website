@@ -6,6 +6,7 @@
 
 .introduce-hero{
     background-image: url(../../img/inbetweening/change_bg1.svg);
+    background-repeat: no-repeat;
 }
 
 
