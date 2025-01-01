@@ -6,6 +6,8 @@ on:
   pull_request:
     branches:
       - main
+  workflow_dispatch: # 手动触发
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
