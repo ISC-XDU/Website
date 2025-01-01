@@ -15,7 +15,7 @@ jobs:
       - name: Deploy
         uses: easingthemes/ssh-deploy@main
         env:
-          SSH_PRIVATE_KEY: ${{ secrets.ACCESS_TOKEN }}
-          REMOTE_HOST: ${{ secrets.REMOTE_HOST }}
-          REMOTE_USER: ${{ secrets.REMOTE_USER }}
-          TARGET: ${{ secrets.TARGET_URL }} 
+          SSH_PRIVATE_KEY: ${{ secrets.ISC_SERVER_PRIVATE_KEY }}
+          REMOTE_HOST: ${{ secrets.SC_SERVER_HOST_ADDRESS }}
+          REMOTE_USER: ${{ secrets.ISC_SERVER_USER }}
+          TARGET: ${{ secrets.WORK_TARGEAT_PATH }} 
