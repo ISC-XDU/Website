@@ -3,36 +3,32 @@
  * 深色模式切换
  * - 基于 checkbox（无 JS 框架依赖）
  * - 写 <html data-theme="..."> + localStorage
- * - 视觉：参考 Uiverse.io by m1her，3D 立方体随状态翻转
- * - 动态效果：track 颜色过渡 + thumb 滑动 + 整个 label scaleX(-1) 镜像
+ * - 视觉：经典 IO 开关（pill 轨道 + 圆形 thumb）
+ * - 动态效果：整组 scaleX(-1) 镜像翻转 + thumb 滑动 + 颜色过渡
  */
 ---
 
 <style>
-  /* toggle 整体动画 */
-  .theme-toggle {
-    perspective: 600px;
-  }
+  /* 整组镜像翻转（参考 Uiverse 原始效果） */
   .theme-toggle-label {
     transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55);
-    transform-style: preserve-3d;
   }
-  /* checked 时整组镜像翻转（参考 Uiverse 原始效果） */
   .theme-toggle-input:checked + .theme-toggle-label {
     transform: scaleX(-1);
   }
 
-  /* track 颜色 */
+  /* 轨道颜色 */
   .theme-toggle-track {
     transition: background-color 0.4s, border-color 0.4s;
   }
 
   /* thumb 滑动 */
   .theme-toggle-thumb {
-    transition: transform 0.45s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+    transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55),
+                background-color 0.4s;
   }
   .theme-toggle-input:checked + .theme-toggle-label .theme-toggle-thumb {
-    transform: translateX(32px) rotateY(360deg);
+    transform: translateX(32px);
   }
 
   /* sun / moon 透明度 */
@@ -41,43 +37,12 @@
     transition: opacity 0.3s, transform 0.3s;
   }
   .theme-toggle-input:checked + .theme-toggle-label .theme-toggle-sun {
-    opacity: 0.15;
-    transform: scale(0.7);
+    opacity: 0.2;
+    transform: scale(0.6);
   }
   .theme-toggle-input:not(:checked) + .theme-toggle-label .theme-toggle-moon {
-    opacity: 0.15;
-    transform: scale(0.7);
-  }
-
-  /* 立方体：3 个面拼出立体感 */
-  .cube {
-    transform-style: preserve-3d;
-    transition: transform 0.6s cubic-bezier(0.68, -0.55, 0.27, 1.55);
-  }
-  .theme-toggle-input:checked + .theme-toggle-label .cube {
-    transform: rotateY(180deg);
-  }
-
-  .cube-face {
-    position: absolute;
-    inset: 0;
-  }
-  /* 顶面（三角） */
-  .cube-face-top {
-    background: transparent;
-    border-style: solid;
-    border-color: transparent transparent currentColor transparent;
-  }
-  /* 左面（亮蓝，倾斜） */
-  .cube-face-left {
-    background: currentColor;
-    transform-origin: left center;
-  }
-  /* 右面（深蓝，反倾斜） */
-  .cube-face-right {
-    background: currentColor;
-    opacity: 0.7;
-    transform-origin: right center;
+    opacity: 0.2;
+    transform: scale(0.6);
   }
 </style>
 
@@ -94,51 +59,28 @@
   />
 
   <span
-    class="theme-toggle-label absolute inset-0 block rounded-lg border-2 border-ink-900
+    class="theme-toggle-label absolute inset-0 block rounded-full border-2 border-ink-900
            bg-ink-100 peer-checked:bg-ink-900 peer-checked:border-inspur-500"
   >
-    {/* 轨道 */}
+    {/* 太阳（亮模式亮） */}
     <span
-      class="theme-toggle-track absolute inset-0 rounded-lg overflow-hidden
-             bg-ink-100 peer-checked:bg-ink-900"
-    >
-      {/* 左：太阳（亮模式亮） */}
-      <span
-        class="theme-toggle-sun absolute left-1.5 top-1/2 -translate-y-1/2 w-4 h-4 rounded-full border-2 border-ink-900"
-        aria-hidden="true"
-      ></span>
-
-      {/* 右：月牙（暗模式亮） */}
-      <span
-        class="theme-toggle-moon absolute right-2 top-1/2 -translate-y-1/2 w-3.5 h-1 rounded-full bg-ink-900"
-        aria-hidden="true"
-      ></span>
-    </span>
-
-    {/* 滑动 thumb：含 3D 立方体 */}
-    <span
-      class="theme-toggle-thumb absolute top-0 left-0 w-8 h-8 flex items-center justify-center
-             text-inspur-500"
+      class="theme-toggle-sun absolute left-2 top-1/2 -translate-y-1/2 w-3.5 h-3.5 rounded-full border-2 border-ink-900"
       aria-hidden="true"
-    >
-      <span class="cube relative w-5 h-5" style="transform: rotateX(35deg) rotateZ(45deg);">
-        {/* 顶面（白色三角） */}
-        <span
-          class="cube-face cube-face-top"
-          style="border-width: 0 6px 4px 6px; bottom: 100%;"
-        ></span>
-        {/* 左面（亮蓝） */}
-        <span
-          class="cube-face cube-face-left"
-          style="transform: skewY(-30deg);"
-        ></span>
-        {/* 右面（深蓝） */}
-        <span
-          class="cube-face cube-face-right"
-          style="transform: skewY(30deg);"
-        ></span>
-      </span>
-    </span>
+    ></span>
+
+    {/* 月牙（暗模式亮） */}
+    <span
+      class="theme-toggle-moon absolute right-2 top-1/2 -translate-y-1/2 w-3.5 h-1 rounded-full bg-ink-900"
+      aria-hidden="true"
+    ></span>
+
+    {/* 滑动的 thumb：纯圆形（无任何装饰） */}
+    <span
+      class="theme-toggle-thumb absolute top-0 left-0 w-8 h-8 rounded-full
+             bg-white border-2 border-ink-900 shadow-sm
+             peer-checked:bg-ink-50"
+      aria-hidden="true"
+    ></span>
   </span>
 </label>
 
