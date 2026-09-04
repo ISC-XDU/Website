@@ -150,10 +150,14 @@ const carouselId = `carousel-${Math.random().toString(36).slice(2, 9)}`;
 
     const start = () => {
       if (root.dataset.autoplay !== 'true') return;
+      if (timer) return; // 已有 timer，不重复创建
       timer = window.setInterval(() => go(current + 1), Number(root.dataset.interval) || 5000);
     };
     const stop = () => {
-      if (timer) clearInterval(timer);
+      if (timer) {
+        clearInterval(timer);
+        timer = undefined;
+      }
     };
     const restart = () => {
       stop();
@@ -162,6 +166,15 @@ const carouselId = `carousel-${Math.random().toString(36).slice(2, 9)}`;
 
     root.addEventListener('mouseenter', stop);
     root.addEventListener('mouseleave', start);
+
+    // 切到后台标签时停，回前台续
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) {
+        stop();
+      } else {
+        start();
+      }
+    });
 
     update();
     start();

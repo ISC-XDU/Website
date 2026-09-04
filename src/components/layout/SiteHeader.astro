@@ -36,13 +36,21 @@ function isActive(href: string): boolean {
       <a href="/" class="flex items-center gap-2 group" aria-label={`${siteData.name} 首页`}>
         {isHome ? (
           <>
-            {/* 主页：西电红章 + 浪潮集团 LOGO */}
-            <img
-              src="/img/xdu/xdulogo.png"
-              alt="西安电子科技大学"
-              class="h-9 w-9 sm:h-10 sm:w-10 transition-transform group-hover:scale-105"
-              style="background: transparent;"
-            />
+            {/* 主页：西电红章（外链）+ 浪潮集团 LOGO（首页内链） */}
+            <a
+              href="https://www.xidian.edu.cn/"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="transition-transform hover:scale-105"
+              aria-label="西安电子科技大学官网"
+            >
+              <img
+                src="/img/xdu/xdulogo.png"
+                alt="西安电子科技大学"
+                class="h-9 w-9 sm:h-10 sm:w-10"
+                style="background: transparent;"
+              />
+            </a>
             <span class="hidden sm:inline-block w-px h-7 bg-white/20 mx-1" aria-hidden="true"></span>
             <img
               src="/img/inspur/inspur_logo.png"
