@@ -14,11 +14,6 @@ function isActive(href: string): boolean {
   if (href === '/') return pathname === '/';
   return pathname.startsWith(href);
 }
-
-// subpage 顶部背景：校园风景图 + 暗色渐变蒙版，保证文字可读
-const headerBgStyle = isHome
-  ? undefined
-  : "background-image: linear-gradient(rgba(15, 23, 42, 0.55), rgba(15, 23, 42, 0.65)), url('/img/xdu/xd_sunsetting.jpg'); background-size: cover; background-position: center 30%;";
 ---
 
 <header
@@ -26,13 +21,12 @@ const headerBgStyle = isHome
     'fixed top-0 left-0 right-0 z-40 transition-all duration-300',
     isHome
       ? 'bg-white/95 backdrop-blur-md border-b border-ink-100'
-      : 'border-b border-white/10 text-white',
+      : 'bg-black border-b border-white/10 text-white',
   ]}
-  style={headerBgStyle}
   data-header
   data-variant={variant}
 >
-  {/* 首页进度条（wpkoi 风格） */}
+  {/* 滚动进度条（wpkoi 风格） */}
   <div
     class="absolute bottom-0 left-0 h-0.5 bg-inspur-400 origin-left scale-x-0 transition-transform duration-150"
     data-scroll-progress
@@ -45,6 +39,7 @@ const headerBgStyle = isHome
       <a href="/" class="flex items-center gap-2 group" aria-label={`${siteData.name} 首页`}>
         {isHome ? (
           <>
+            {/* 主页：西电红章 + 浪潮集团 LOGO */}
             <img
               src="/img/xdu/xdulogo.png"
               width="44"
@@ -57,23 +52,34 @@ const headerBgStyle = isHome
               src="/img/inspur/inspur_logo.png"
               width="44"
               height="44"
-              alt="浪潮"
+              alt="浪潮集团"
               class="opacity-90 transition-transform group-hover:scale-105"
             />
           </>
         ) : (
           <>
+            {/* 子页：透明背景小图标 + 浪潮集团 LOGO + 文字 */}
             <img
-              src="/img/inspur/inspur_logo_white.png"
-              width="40"
-              height="40"
+              src="/img/icon/inspur.png"
+              width="32"
+              height="32"
               alt="浪潮俱乐部"
-              class="drop-shadow-md transition-transform group-hover:scale-105"
+              class="brightness-0 invert transition-transform group-hover:scale-105"
+              style="background: transparent;"
+            />
+            <span class="hidden sm:inline-block w-px h-7 bg-white/20" aria-hidden="true"></span>
+            <img
+              src="/img/inspur/inspur_logo.png"
+              width="100"
+              height="32"
+              alt="浪潮 Inspur"
+              class="opacity-95 transition-transform group-hover:scale-105"
+              style="background: transparent; mix-blend-mode: screen;"
             />
             <span
-              class="font-display font-bold text-lg text-white drop-shadow-md hidden sm:inline tracking-wide"
+              class="font-display font-bold text-lg text-white hidden md:inline tracking-wide"
             >
-              {siteData.shortName}
+              ·  {siteData.shortName}
             </span>
           </>
         )}
@@ -284,34 +290,15 @@ const headerBgStyle = isHome
     });
   }
 
-  // 2. wpkoi 风格：滚动进度条 + 滚动时头部磨砂加深
-  const header = document.querySelector('[data-header]') as HTMLElement | null;
+  // 2. wpkoi 风格：滚动进度条
   const progress = document.querySelector('[data-scroll-progress]') as HTMLElement | null;
-  const variant = header?.dataset.variant;
 
   function onScroll() {
     const doc = document.documentElement;
     const total = doc.scrollHeight - doc.clientHeight;
     const pct = total > 0 ? doc.scrollTop / total : 0;
-
     if (progress) {
       progress.style.transform = `scaleX(${pct})`;
-    }
-
-    // subpage 头部：滚动时增加毛玻璃
-    if (header && variant === 'subpage') {
-      const style = header.style as CSSStyleDeclaration & {
-        webkitBackdropFilter?: string;
-      };
-      if (doc.scrollTop > 20) {
-        style.backdropFilter = 'blur(8px)';
-        style.webkitBackdropFilter = 'blur(8px)';
-        style.backgroundColor = 'rgba(15, 23, 42, 0.35)';
-      } else {
-        style.backdropFilter = '';
-        style.webkitBackdropFilter = '';
-        style.backgroundColor = '';
-      }
     }
   }
 

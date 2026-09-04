@@ -16,22 +16,30 @@ const sizes = {
 
 <div
   id={id}
-  class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-ink-900/60 backdrop-blur-sm"
+  class="modal fixed inset-0 z-[100] hidden items-center justify-center p-4 sm:p-6"
   role="dialog"
   aria-modal="true"
   aria-labelledby={`${id}-title`}
   data-modal
+  data-original-parent=""
 >
+  <!-- 背景蒙版：独立一层，撑满 fixed 容器 -->
+  <div
+    class="modal-backdrop absolute inset-0 bg-ink-900/70 backdrop-blur-sm"
+    data-modal-backdrop
+  ></div>
+
+  <!-- 内容卡片：相对定位、滚动 -->
   <div
     class:list={[
-      'relative w-full bg-white rounded-2xl shadow-2xl max-h-[90vh] overflow-y-auto',
+      'modal-content relative w-full bg-white rounded-2xl shadow-2xl max-h-[90vh] overflow-y-auto',
       sizes[size],
     ]}
     data-modal-content
   >
     {
       title && (
-        <div class="flex items-center justify-between p-5 border-b border-ink-100">
+        <div class="sticky top-0 z-10 flex items-center justify-between p-5 border-b border-ink-100 bg-white/95 backdrop-blur rounded-t-2xl">
           <h2 id={`${id}-title`} class="text-lg font-semibold text-ink-900">
             {title}
           </h2>
@@ -59,22 +67,30 @@ const sizes = {
 </div>
 
 <script>
-  // Modal 通用行为：open / close / Esc / 点击背景关闭
+  // Portal 模式：把 modal 移到 body 直接子节点，确保 position:fixed 撑满视口
+  function portalize() {
+    document.querySelectorAll<HTMLElement>('[data-modal]').forEach((modal) => {
+      if (modal.parentElement !== document.body) {
+        modal.dataset.originalParent = modal.parentElement?.className ?? '';
+        document.body.appendChild(modal);
+      }
+    });
+  }
+
   function setupModals() {
-    document.querySelectorAll('[data-modal]').forEach((modal) => {
-      const content = modal.querySelector('[data-modal-content]');
-      const closers = modal.querySelectorAll('[data-modal-close]');
+    document.querySelectorAll<HTMLElement>('[data-modal]').forEach((modal) => {
+      const content = modal.querySelector<HTMLElement>('[data-modal-content]');
+      const closers = modal.querySelectorAll<HTMLElement>('[data-modal-close]');
+      const backdrop = modal.querySelector<HTMLElement>('[data-modal-backdrop]');
 
       const open = () => {
         modal.classList.remove('hidden');
         modal.classList.add('flex');
         document.body.style.overflow = 'hidden';
-        // 焦点移到内容
-        if (content instanceof HTMLElement) {
-          const firstFocusable = content.querySelector(
-            'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
-          );
-          (firstFocusable as HTMLElement | null)?.focus();
+        document.body.dataset.modalOpen = 'true';
+        // 焦点移到关闭按钮（用 preventScroll 防止页面滚动）
+        if (closers[0]) {
+          closers[0].focus({ preventScroll: true });
         }
       };
 
@@ -82,14 +98,16 @@ const sizes = {
         modal.classList.add('hidden');
         modal.classList.remove('flex');
         document.body.style.overflow = '';
+        delete document.body.dataset.modalOpen;
       };
 
       closers.forEach((btn) => btn.addEventListener('click', close));
 
-      // 点击背景关闭
-      modal.addEventListener('click', (e) => {
-        if (e.target === modal) close();
-      });
+      // 点击背景蒙版关闭
+      backdrop?.addEventListener('click', close);
+
+      // 阻止内容区域的点击冒泡到背景
+      content?.addEventListener('click', (e) => e.stopPropagation());
 
       // Esc 关闭
       document.addEventListener('keydown', (e) => {
@@ -99,24 +117,26 @@ const sizes = {
       });
 
       // 暴露 open / close 方法
-      (modal as any)._open = open;
-      (modal as any)._close = close;
+      (modal as unknown as { _open: () => void })._open = open;
+      (modal as unknown as { _close: () => void })._close = close;
     });
   }
 
+  // 页面加载完成后执行
+  portalize();
   setupModals();
 
-  // 全局事件：任何带 [data-modal-open="<id>"] 的元素都会打开对应 modal
+  // 全局事件：任何 [data-modal-open="<id>"] 点击都会打开对应 modal
   document.addEventListener('click', (e) => {
     const target = e.target as HTMLElement | null;
-    const trigger = target?.closest('[data-modal-open]') as HTMLElement | null;
+    const trigger = target?.closest<HTMLElement>('[data-modal-open]');
     if (!trigger) return;
     const id = trigger.dataset.modalOpen;
     if (!id) return;
     e.preventDefault();
     const modal = document.getElementById(id);
-    if (modal && typeof (modal as any)._open === 'function') {
-      (modal as any)._open();
+    if (modal && typeof (modal as unknown as { _open?: () => void })._open === 'function') {
+      (modal as unknown as { _open: () => void })._open();
     }
   });
 </script>
