@@ -22,14 +22,7 @@
     transition: background-color 0.4s, border-color 0.4s;
   }
 
-  /* thumb 滑动 */
-  .theme-toggle-thumb {
-    transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55),
-                background-color 0.4s;
-  }
-  .theme-toggle-input:checked + .theme-toggle-label .theme-toggle-thumb {
-    transform: translateX(32px);
-  }
+  /* thumb 已移除（用户要求只保留 IO 开关本体） */
 
   /* sun / moon 透明度 */
   .theme-toggle-sun,
@@ -71,13 +64,6 @@
     {/* 月牙（暗模式亮） */}
     <span
       class="theme-toggle-moon absolute right-2 top-1/2 -translate-y-1/2 w-3.5 h-1 rounded-full bg-ink-900"
-      aria-hidden="true"
-    ></span>
-
-    {/* 滑动的 thumb：纯白圆（亮暗模式同色） */}
-    <span
-      class="theme-toggle-thumb absolute top-0 left-0 w-8 h-8 rounded-full
-             bg-white border-2 border-ink-900 shadow-sm"
       aria-hidden="true"
     ></span>
   </span>
