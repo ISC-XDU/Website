@@ -35,6 +35,11 @@
     @apply bg-ink-900;
   }
 
+  /* 例外：深色模式切换器始终保持白色（高对比、明确状态指示） */
+  [data-theme='dark'] .theme-toggle-label.bg-white {
+    background-color: #ffffff !important;
+  }
+
   /* 通用：浅灰背景（muted）在暗色下更深 */
   [data-theme='dark'] .bg-ink-50 {
     @apply bg-ink-900;
