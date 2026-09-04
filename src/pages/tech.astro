@@ -1,8 +1,36 @@
 ---
+import { getCollection } from 'astro:content';
 import PageLayout from '@layouts/PageLayout.astro';
+import Section from '@components/ui/Section.astro';
+import TechGroupCard from '@components/sections/TechGroupCard.astro';
+
+const groups = (await getCollection('techGroups')).sort(
+  (a, b) => a.data.order - b.data.order
+);
 ---
 
-<PageLayout title="技术部">
-  <h1 class="heading-display text-4xl md:text-5xl text-ink-900">技术部</h1>
-  <p class="mt-4 text-lg text-ink-600">技术部（建设中）</p>
+<PageLayout
+  title="技术部"
+  description="西电浪潮俱乐部技术部下设 ACM 组、AI 组、WEB 组、系统组。"
+>
+  <Section background="dark" containerClass="!py-10 md:!py-14">
+    <h1 class="heading-display text-3xl md:text-4xl text-white">欢迎来到浪潮技术部</h1>
+    <p class="mt-4 text-ink-200 leading-relaxed max-w-3xl">
+      <span class="text-emerald-400 font-semibold">西电浪潮俱乐部技术部</span>
+      是一个致力于为更多同学
+      <span class="text-amber-400">创造课业以外的学习机会</span>
+      的大家庭。我们为每一位同学提供不同领域、不同形式的
+      <strong class="text-white">竞赛</strong> 和
+      <strong class="text-white">学业拓展活动</strong>，让你能在大学的生活中充满更多的可能性。
+    </p>
+    <p class="mt-3 text-ink-200 leading-relaxed max-w-3xl">
+      技术部作为反卷斗争的第一线，坚决反对无必要的"溢出学习"：让学习可靠延伸，让技术更有温度。技术部的建立初衷一方面为同学们提供技术的探索机会，另一方面便是让同学们适应从高中至大学的学习环境变化。
+    </p>
+  </Section>
+
+  {
+    groups.map((g, i) => (
+      <TechGroupCard group={g} index={i} />
+    ))
+  }
 </PageLayout>

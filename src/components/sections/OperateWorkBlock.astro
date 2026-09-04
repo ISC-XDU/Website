@@ -1,0 +1,80 @@
+---
+import Section from '@components/ui/Section.astro';
+import Card from '@components/ui/Card.astro';
+
+const works = [
+  {
+    title: '活动工作',
+    description: '浪潮每一场特殊的活动都离不开活动宝子们的精心策划、安排和主持。',
+    image: '/img/inbetweening/operate3.png',
+  },
+  {
+    title: '宣传工作',
+    description: '宣传宝子们是浪潮的小喇叭，将浪潮推向全校。',
+    image: '/img/inbetweening/operate1.png',
+  },
+  {
+    title: '运营工作',
+    description: '运营意味着资源整合、人员调动的管理，控制浪潮的运转齿轮。',
+    image: '/img/inbetweening/operate2.png',
+  },
+];
+
+const gains = [
+  { title: '资源管理 / 规划协调', image: '/img/inbetweening/operate_get1.png' },
+  { title: '宣传沟通 / 主持演说', image: '/img/inbetweening/operate_get2.png' },
+  { title: '团队合作 / 协作发展', image: '/img/inbetweening/operate_get4.png' },
+  { title: '策划分析 / 信息处理', image: '/img/inbetweening/operate_get3.png' },
+];
+---
+
+<Section background="default">
+  <div class="text-center max-w-2xl mx-auto mb-10">
+    <h2 class="heading-display text-3xl md:text-4xl text-ink-900">运营部三块工作</h2>
+  </div>
+
+  <div class="grid md:grid-cols-3 gap-6 mb-16">
+    {
+      works.map((w) => (
+        <Card class="h-full" interactive>
+          <div class="p-5 flex flex-col h-full">
+            <div class="aspect-[4/3] rounded-lg bg-ink-50 mb-4 overflow-hidden">
+              <img
+                src={w.image}
+                alt=""
+                class="w-full h-full object-contain"
+                loading="lazy"
+              />
+            </div>
+            <h3 class="text-xl font-semibold text-ink-900 mb-2">{w.title}</h3>
+            <p class="text-sm text-ink-600 leading-relaxed flex-1">{w.description}</p>
+          </div>
+        </Card>
+      ))
+    }
+  </div>
+
+  <div class="text-center max-w-2xl mx-auto mb-10">
+    <h2 class="heading-display text-3xl md:text-4xl text-ink-900">加入运营部，你将学会</h2>
+  </div>
+
+  <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
+    {
+      gains.map((g) => (
+        <Card class="h-full" interactive>
+          <div class="p-5 text-center h-full flex flex-col">
+            <div class="w-20 h-20 mx-auto rounded-full bg-ink-50 overflow-hidden mb-3">
+              <img
+                src={g.image}
+                alt=""
+                class="w-full h-full object-contain"
+                loading="lazy"
+              />
+            </div>
+            <p class="text-sm text-ink-700 font-medium flex-1">{g.title}</p>
+          </div>
+        </Card>
+      ))
+    }
+  </div>
+</Section>
