@@ -58,15 +58,10 @@ function isActive(href: string): boolean {
               class="h-7 sm:h-8 w-auto transition-transform group-hover:scale-105"
               style="background: transparent; mix-blend-mode: screen;"
             />
-            <span
-              class="font-display font-bold text-base sm:text-lg text-white hidden md:inline tracking-wide"
-            >
-              {siteData.shortName}
-            </span>
           </>
         ) : (
           <>
-            {/* 子页：浪潮俱乐部图标（外链到 inspur.com，2x 放大）+ 浪潮集团 LOGO + 文字 */}
+            {/* 子页：浪潮俱乐部图标（外链到 inspur.com，2x 放大）+ 浪潮集团 LOGO */}
             <a
               href="https://www.inspur.com/"
               target="_blank"
@@ -88,11 +83,6 @@ function isActive(href: string): boolean {
               class="h-7 sm:h-8 w-auto opacity-95 transition-transform group-hover:scale-105"
               style="background: transparent; mix-blend-mode: screen;"
             />
-            <span
-              class="font-display font-bold text-base sm:text-lg text-white hidden md:inline tracking-wide"
-            >
-              {siteData.shortName}
-            </span>
           </>
         )}
       </a>
