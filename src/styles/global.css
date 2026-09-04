@@ -25,6 +25,89 @@
     overflow-x: hidden;
   }
 
+  /* ===== 深色模式全局基础覆盖 ===== */
+  [data-theme='dark'] body {
+    @apply bg-ink-950 text-ink-100;
+  }
+
+  /* 通用：默认白色背景的元素在暗色下变深 */
+  [data-theme='dark'] .bg-white {
+    @apply bg-ink-900;
+  }
+
+  /* 通用：浅灰背景（muted）在暗色下更深 */
+  [data-theme='dark'] .bg-ink-50 {
+    @apply bg-ink-900;
+  }
+
+  /* 通用：浅灰背景（gradient）微调 */
+  [data-theme='dark'] .bg-gradient-to-br {
+    background-image: linear-gradient(to bottom right, rgba(20, 32, 85, 0.6), rgb(13, 14, 17), rgba(20, 32, 85, 0.4)) !important;
+  }
+
+  /* 文字：默认深色文字在暗色下变浅 */
+  [data-theme='dark'] .text-ink-900 {
+    @apply text-ink-50;
+  }
+  [data-theme='dark'] .text-ink-800 {
+    @apply text-ink-100;
+  }
+  [data-theme='dark'] .text-ink-700 {
+    @apply text-ink-200;
+  }
+  [data-theme='dark'] .text-ink-600 {
+    @apply text-ink-300;
+  }
+  [data-theme='dark'] .text-ink-500 {
+    @apply text-ink-400;
+  }
+
+  /* 边框：默认浅灰边框在暗色下加深 */
+  [data-theme='dark'] .border-ink-100 {
+    @apply border-ink-800;
+  }
+  [data-theme='dark'] .border-ink-200 {
+    @apply border-ink-700;
+  }
+
+  /* prose 在暗色下的微调 */
+  [data-theme='dark'] .prose {
+    --tw-prose-body: theme('colors.ink.200');
+    --tw-prose-headings: theme('colors.ink.50');
+    --tw-prose-bold: theme('colors.ink.50');
+  }
+  [data-theme='dark'] .prose h2,
+  [data-theme='dark'] .prose h3 {
+    color: theme('colors.ink.50');
+  }
+  [data-theme='dark'] .prose strong {
+    color: theme('colors.ink.50');
+  }
+  [data-theme='dark'] .prose pre {
+    background-color: theme('colors.ink.900') !important;
+    color: theme('colors.ink.200') !important;
+    border-color: theme('colors.ink.700') !important;
+  }
+  [data-theme='dark'] .prose pre code {
+    color: theme('colors.ink.100') !important;
+  }
+  [data-theme='dark'] .prose :not(pre) > code {
+    background-color: theme('colors.ink.800');
+    color: theme('colors.ink.100');
+  }
+  [data-theme='dark'] .prose blockquote {
+    color: theme('colors.ink.300');
+    border-left-color: theme('colors.inspur.500');
+  }
+  [data-theme='dark'] .prose th {
+    background-color: theme('colors.ink.800');
+    color: theme('colors.ink.100');
+    border-color: theme('colors.ink.700');
+  }
+  [data-theme='dark'] .prose td {
+    border-color: theme('colors.ink.700');
+  }
+
   /* 隐藏滚动条但保留功能（横向 carousel 用） */
   .scrollbar-hide::-webkit-scrollbar {
     display: none;

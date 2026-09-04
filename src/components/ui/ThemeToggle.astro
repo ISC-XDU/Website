@@ -1,0 +1,98 @@
+---
+/**
+ * 深色模式切换
+ * - 基于 checkbox（无 JS 框架依赖）
+ * - 写入 <html data-theme="...">
+ * - 持久化到 localStorage
+ * - 视觉参考 Uiverse.io by m1her：圆 + 3D 立方体 + 横线
+ */
+---
+
+<label
+  for="theme-toggle"
+  class="group relative inline-flex items-center h-8 w-16 rounded-lg cursor-pointer transition-colors duration-300
+         bg-ink-100 border-2 border-ink-900
+         has-checked:bg-ink-900 has-checked:border-inspur-500"
+  aria-label="切换深色模式"
+  title="切换深色模式"
+>
+  <input
+    type="checkbox"
+    id="theme-toggle"
+    class="sr-only peer"
+    aria-label="切换深色模式"
+  />
+
+  {/* 左：太阳（亮模式指示） */}
+  <span
+    class="absolute left-1.5 w-4 h-4 rounded-full border-2 border-ink-900
+           transition-opacity duration-300
+           peer-checked:opacity-25"
+    aria-hidden="true"
+  ></span>
+
+  {/* 中：3D 立方体（inspur 蓝，状态变化） */}
+  <span class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2" aria-hidden="true">
+    <span class="block relative w-7 h-5">
+      {/* 立方体顶面（三角） */}
+      <span
+        class="absolute top-0 left-1/2 -translate-x-1/2
+               w-0 h-0
+               border-l-[10px] border-l-transparent
+               border-r-[10px] border-r-transparent
+               border-t-[7px] border-t-ink-900"
+      ></span>
+      <span
+        class="absolute top-[1px] left-1/2 -translate-x-1/2
+               w-0 h-0
+               border-l-[8px] border-l-transparent
+               border-r-[8px] border-r-transparent
+               border-t-[6px] border-t-inspur-500"
+        style="margin-left: -1px;"
+      ></span>
+      {/* 立方体左面（亮蓝） */}
+      <span
+        class="absolute top-[6px] left-0 w-3.5 h-3.5
+               bg-inspur-500 border-2 border-ink-900
+               transform skew-y-[20deg] origin-top-left"
+      ></span>
+      {/* 立方体右面（深蓝） */}
+      <span
+        class="absolute top-[6px] right-0 w-3.5 h-3.5
+               bg-inspur-700 border-2 border-ink-900
+               transform -skew-y-[20deg] origin-top-right"
+      ></span>
+    </span>
+  </span>
+
+  {/* 右：月牙（暗模式指示） */}
+  <span
+    class="absolute right-1.5 w-4 h-1 rounded-full bg-ink-900
+           transition-opacity duration-300
+           peer-not-checked:opacity-25"
+    aria-hidden="true"
+  ></span>
+</label>
+
+<script>
+  function setupThemeToggle() {
+    const cb = document.getElementById('theme-toggle') as HTMLInputElement | null;
+    if (!cb) return;
+
+    // 初始状态：从 data-theme 同步
+    const current = document.documentElement.dataset.theme;
+    cb.checked = current === 'dark';
+
+    cb.addEventListener('change', () => {
+      const isDark = cb.checked;
+      document.documentElement.dataset.theme = isDark ? 'dark' : 'light';
+      try {
+        localStorage.setItem('theme', isDark ? 'dark' : 'light');
+      } catch {
+        // localStorage 不可用时静默
+      }
+    });
+  }
+
+  setupThemeToggle();
+</script>
