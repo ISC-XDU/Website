@@ -108,15 +108,34 @@
   .prose blockquote {
     @apply border-l-4 border-inspur-300 pl-4 italic text-ink-600 my-4;
   }
-  /* 路径图风格的代码块：浅灰底、等宽字体、保留换行 */
+  /* 路径图风格的代码块：浅底深字（用直接 CSS 强制覆盖 @tailwindcss/typography） */
   .prose pre {
-    @apply bg-ink-50 text-ink-700 rounded-lg p-4 my-4 text-sm leading-relaxed overflow-x-auto whitespace-pre;
+    background-color: #f6f6f7 !important; /* ink-50 */
+    color: #41454d !important; /* ink-700 */
+    border-radius: 0.5rem;
+    padding: 1rem;
+    margin: 1rem 0;
+    font-size: 0.875rem;
+    line-height: 1.7;
+    overflow-x: auto;
+    white-space: pre;
+    border: 1px solid #e7e8ea; /* ink-100 */
   }
   .prose code {
-    @apply font-mono text-[0.9em];
+    font-family: 'JetBrains Mono', 'Fira Code', ui-monospace, SFMono-Regular, monospace;
+    font-size: 0.9em;
   }
   .prose pre code {
-    @apply bg-transparent p-0 text-ink-800;
+    background-color: transparent !important;
+    color: #2b2e35 !important; /* ink-800 */
+    padding: 0 !important;
+  }
+  .prose :not(pre) > code {
+    background-color: #f6f6f7;
+    color: #b91c1c; /* xidian-700，红，类似 markdown 默认 */
+    padding: 0.1em 0.4em;
+    border-radius: 0.25rem;
+    font-weight: 500;
   }
   .prose hr {
     @apply my-8 border-ink-200;

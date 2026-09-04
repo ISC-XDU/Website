@@ -124,27 +124,27 @@ const p = palettes[accent as keyof typeof palettes];
       {/* 你将收获 - 交互卡片 */}
       {
         group.data.gains && group.data.gains.length > 0 && (
-          <div class="mb-8">
-            <h3 class="text-lg font-bold text-ink-900 mb-4 flex items-center gap-2">
+          <div class="mb-6">
+            <h3 class="text-lg font-bold text-ink-900 mb-3 flex items-center gap-2">
               <span class:list={['inline-block w-1 h-5 rounded-sm', p.bullet]} aria-hidden="true"></span>
               你将收获
             </h3>
-            <ul class="space-y-3">
+            <ul class="space-y-2.5">
               {group.data.gains.map((g) => (
                 <li>
                   <Card class="hover-lift">
-                    <div class="p-4 flex gap-3">
+                    <div class="p-3.5 flex gap-3">
                       <span
                         class:list={[
-                          'flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center text-white font-bold text-sm',
+                          'flex-shrink-0 w-7 h-7 rounded-md flex items-center justify-center text-white font-bold text-xs',
                           p.cta,
                         ]}
                       >
                         ✓
                       </span>
                       <div class="flex-1 min-w-0">
-                        <h4 class:list={['font-semibold text-base', p.title]}>{g.title}</h4>
-                        <p class="mt-1 text-sm text-ink-600 leading-relaxed">{g.detail}</p>
+                        <h4 class:list={['font-semibold text-sm', p.title]}>{g.title}</h4>
+                        <p class="mt-0.5 text-xs text-ink-600 leading-relaxed">{g.detail}</p>
                       </div>
                     </div>
                   </Card>
@@ -158,8 +158,8 @@ const p = palettes[accent as keyof typeof palettes];
       {/* 技术栈 / 标签云 */}
       {
         group.data.bullets && group.data.bullets.length > 0 && (
-          <div class="mb-8">
-            <h3 class="text-lg font-bold text-ink-900 mb-4 flex items-center gap-2">
+          <div>
+            <h3 class="text-lg font-bold text-ink-900 mb-3 flex items-center gap-2">
               <span class:list={['inline-block w-1 h-5 rounded-sm', p.bullet]} aria-hidden="true"></span>
               你会接触到的
             </h3>
@@ -178,11 +178,13 @@ const p = palettes[accent as keyof typeof palettes];
           </div>
         )
       }
+    </div>
+  </div>
 
-      {/* Markdown 正文 */}
-      <article class:list={['prose prose-slate max-w-none prose-headings:font-display prose-headings:font-bold', p.body]}>
-        <Content />
-      </article>
+  {/* Markdown 正文 - 2 列下方全宽 section，避免左右高度差 */}
+  <div class="mt-10 max-w-3xl mx-auto">
+    <div class:list={['prose prose-slate max-w-none prose-headings:font-display prose-headings:font-bold', p.body]}>
+      <Content />
     </div>
   </div>
 </Section>
