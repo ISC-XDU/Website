@@ -66,22 +66,30 @@ function isActive(href: string): boolean {
           </>
         ) : (
           <>
-            {/* 子页：浪潮集团 LOGO（主，大） + 浪潮俱乐部（辅，小） */}
+            {/* 子页：浪潮俱乐部图标（外链到 inspur.com，2x 放大）+ 浪潮集团 LOGO + 文字 */}
+            <a
+              href="https://www.inspur.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="transition-transform hover:scale-105 shrink-0"
+              aria-label="浪潮 Inspur 官网"
+            >
+              <img
+                src="/img/icon/inspur.png"
+                alt="浪潮 Inspur"
+                class="h-10 w-10 sm:h-12 sm:w-12 brightness-0 invert"
+                style="background: transparent;"
+              />
+            </a>
+            <span class="hidden sm:inline-block w-px h-10 bg-white/20" aria-hidden="true"></span>
             <img
               src="/img/inspur/inspur_logo.png"
               alt="浪潮集团 Inspur"
-              class="h-8 sm:h-9 w-auto opacity-95 transition-transform group-hover:scale-105"
+              class="h-7 sm:h-8 w-auto opacity-95 transition-transform group-hover:scale-105"
               style="background: transparent; mix-blend-mode: screen;"
             />
-            <span class="hidden sm:inline-block w-px h-6 bg-white/20" aria-hidden="true"></span>
-            <img
-              src="/img/icon/inspur.png"
-              alt="浪潮俱乐部"
-              class="h-5 w-5 sm:h-6 sm:w-6 brightness-0 invert transition-transform group-hover:scale-105"
-              style="background: transparent;"
-            />
             <span
-              class="font-display font-bold text-base text-white hidden md:inline tracking-wide"
+              class="font-display font-bold text-base sm:text-lg text-white hidden md:inline tracking-wide"
             >
               {siteData.shortName}
             </span>
