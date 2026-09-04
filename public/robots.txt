@@ -1,0 +1,6 @@
+# 浪潮俱乐部官网 robots.txt
+User-agent: *
+Allow: /
+Disallow: /.well-known/
+
+Sitemap: https://www.isc-xdu.cn/sitemap-index.xml

@@ -1,0 +1,196 @@
+---
+import navData from '@data/nav.json';
+import siteData from '@data/site.json';
+
+const pathname = Astro.url.pathname;
+
+function isActive(href: string): boolean {
+  if (href === '/') return pathname === '/';
+  return pathname.startsWith(href);
+}
+---
+
+<header
+  class="fixed top-0 left-0 right-0 z-40 bg-white/90 backdrop-blur-md border-b border-ink-100"
+>
+  <nav class="container-page" aria-label="主导航">
+    <div class="flex items-center justify-between h-16">
+      <!-- Logo -->
+      <a href="/" class="flex items-center gap-2 group" aria-label={`${siteData.name} 首页`}>
+        <img
+          src="/favicon.svg"
+          width="32"
+          height="32"
+          alt=""
+          class="transition-transform group-hover:scale-105"
+        />
+        <span class="font-display font-bold text-lg text-ink-900 hidden sm:inline">
+          {siteData.shortName}
+        </span>
+      </a>
+
+      <!-- Desktop nav -->
+      <ul class="hidden md:flex items-center gap-1">
+        {
+          navData.map((item) => (
+            <li class="relative group">
+              {item.children ? (
+                <>
+                  <button
+                    type="button"
+                    class="px-3 py-2 text-sm font-medium text-ink-700 hover:text-inspur-600 rounded-md transition-colors flex items-center gap-1"
+                    aria-haspopup="true"
+                    aria-expanded="false"
+                    data-dropdown-trigger
+                  >
+                    {item.label}
+                    <svg
+                      class="w-4 h-4 transition-transform group-hover:rotate-180"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                      aria-hidden="true"
+                    >
+                      <path
+                        fill-rule="evenodd"
+                        d="M5.23 7.21a.75.75 0 011.06.02L10 11.06l3.71-3.83a.75.75 0 111.08 1.04l-4.25 4.39a.75.75 0 01-1.08 0L5.21 8.27a.75.75 0 01.02-1.06z"
+                        clip-rule="evenodd"
+                      />
+                    </svg>
+                  </button>
+                  <ul
+                    class="absolute right-0 top-full mt-1 min-w-[10rem] py-1 bg-white border border-ink-100 rounded-md shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible group-focus-within:opacity-100 group-focus-within:visible transition-all"
+                    role="menu"
+                  >
+                    {item.children.map((child) => (
+                      <li role="none">
+                        <a
+                          href={child.href}
+                          role="menuitem"
+                          class:list={[
+                            'block px-4 py-2 text-sm hover:bg-inspur-50 hover:text-inspur-700 transition-colors',
+                            isActive(child.href) ? 'text-inspur-600 font-medium' : 'text-ink-700',
+                          ]}
+                        >
+                          {child.label}
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                </>
+              ) : (
+                <a
+                  href={item.href}
+                  class:list={[
+                    'px-3 py-2 text-sm font-medium rounded-md transition-colors',
+                    isActive(item.href)
+                      ? 'text-inspur-600'
+                      : 'text-ink-700 hover:text-inspur-600',
+                  ]}
+                  aria-current={isActive(item.href) ? 'page' : undefined}
+                >
+                  {item.label}
+                </a>
+              )}
+            </li>
+          ))
+        }
+      </ul>
+
+      <!-- Mobile menu button -->
+      <button
+        type="button"
+        class="md:hidden p-2 rounded-md text-ink-700 hover:bg-ink-50"
+        aria-label="打开菜单"
+        aria-expanded="false"
+        aria-controls="mobile-menu"
+        data-mobile-menu-trigger
+      >
+        <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M4 6h16M4 12h16M4 18h16"
+          />
+        </svg>
+      </button>
+    </div>
+
+    <!-- Mobile menu -->
+    <div
+      id="mobile-menu"
+      class="hidden md:hidden border-t border-ink-100 py-3"
+      data-mobile-menu
+    >
+      <ul class="space-y-1">
+        {
+          navData.map((item) => (
+            <li>
+              {item.children ? (
+                <details class="group">
+                  <summary class="flex items-center justify-between px-3 py-2 text-sm font-medium text-ink-700 rounded-md cursor-pointer hover:bg-ink-50">
+                    {item.label}
+                    <svg
+                      class="w-4 h-4 transition-transform group-open:rotate-180"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                      aria-hidden="true"
+                    >
+                      <path
+                        fill-rule="evenodd"
+                        d="M5.23 7.21a.75.75 0 011.06.02L10 11.06l3.71-3.83a.75.75 0 111.08 1.04l-4.25 4.39a.75.75 0 01-1.08 0L5.21 8.27a.75.75 0 01.02-1.06z"
+                        clip-rule="evenodd"
+                      />
+                    </svg>
+                  </summary>
+                  <ul class="mt-1 ml-4 space-y-1 border-l-2 border-ink-100 pl-2">
+                    {item.children.map((child) => (
+                      <li>
+                        <a
+                          href={child.href}
+                          class:list={[
+                            'block px-3 py-2 text-sm rounded-md',
+                            isActive(child.href)
+                              ? 'text-inspur-600 font-medium'
+                              : 'text-ink-600 hover:bg-ink-50',
+                          ]}
+                        >
+                          {child.label}
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                </details>
+              ) : (
+                <a
+                  href={item.href}
+                  class:list={[
+                    'block px-3 py-2 text-sm font-medium rounded-md',
+                    isActive(item.href)
+                      ? 'text-inspur-600 bg-inspur-50'
+                      : 'text-ink-700 hover:bg-ink-50',
+                  ]}
+                >
+                  {item.label}
+                </a>
+              )}
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </nav>
+</header>
+
+<script>
+  // 移动端菜单开关
+  const trigger = document.querySelector('[data-mobile-menu-trigger]');
+  const menu = document.querySelector('[data-mobile-menu]');
+  if (trigger && menu) {
+    trigger.addEventListener('click', () => {
+      const expanded = trigger.getAttribute('aria-expanded') === 'true';
+      trigger.setAttribute('aria-expanded', String(!expanded));
+      menu.classList.toggle('hidden');
+    });
+  }
+</script>

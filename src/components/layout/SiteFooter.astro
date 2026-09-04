@@ -1,0 +1,67 @@
+---
+import siteData from '@data/site.json';
+
+const year = new Date().getFullYear();
+---
+
+<footer class="bg-ink-900 text-ink-100 mt-auto">
+  <div class="container-page py-10">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <div>
+        <div class="flex items-center gap-2 mb-3">
+          <img src="/favicon.svg" width="32" height="32" alt="" />
+          <span class="font-display font-bold text-white">{siteData.shortName}</span>
+        </div>
+        <p class="text-sm text-ink-300 leading-relaxed">
+          {siteData.description}
+        </p>
+      </div>
+
+      <div>
+        <h3 class="text-sm font-semibold text-white mb-3">导航</h3>
+        <ul class="space-y-2 text-sm text-ink-300">
+          <li><a href="/introduce" class="hover:text-white transition-colors">俱乐部介绍</a></li>
+          <li><a href="/tech" class="hover:text-white transition-colors">技术部</a></li>
+          <li><a href="/operate" class="hover:text-white transition-colors">运营部</a></li>
+          <li><a href="/members" class="hover:text-white transition-colors">成员墙</a></li>
+          <li><a href="/thanks" class="hover:text-white transition-colors">致谢</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h3 class="text-sm font-semibold text-white mb-3">联系</h3>
+        <ul class="space-y-2 text-sm text-ink-300">
+          <li>
+            <span class="text-ink-400">邮箱：</span>
+            <a href={`mailto:${siteData.contact.email}`} class="hover:text-white">
+              {siteData.contact.email}
+            </a>
+          </li>
+          <li>
+            <span class="text-ink-400">地址：</span>
+            {siteData.contact.address}
+          </li>
+          <li>
+            <a
+              href={siteData.social.github}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="hover:text-white inline-flex items-center gap-1"
+            >
+              GitHub
+              <svg class="w-3 h-3" viewBox="0 0 12 12" fill="currentColor" aria-hidden="true">
+                <path d="M3 1h8v8h-2V4.41L3.41 10 2 8.59 7.59 3H3V1z" />
+              </svg>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <div
+      class="mt-8 pt-6 border-t border-ink-700 text-center text-xs text-ink-400"
+    >
+      © {year} {siteData.name} · ISC-WEB · 浪潮俱乐部出品
+    </div>
+  </div>
+</footer>

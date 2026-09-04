@@ -1,0 +1,24 @@
+{
+  "name": "西电浪潮俱乐部",
+  "shortName": "浪潮 ISC",
+  "slogan": "Xidian Inspur Student Club",
+  "description": "西电浪潮俱乐部（XDU ISC）成立于 2017 年，是由浪潮集团携手西安电子科技大学计算机学院共同打造的校企联合俱乐部。",
+  "url": "https://www.isc-xdu.cn",
+  "founded": 2017,
+  "stats": {
+    "members": 163,
+    "departments": 2,
+    "techGroups": 4
+  },
+  "contact": {
+    "email": "isc@xidian.edu.cn",
+    "address": "西安电子科技大学 G 楼"
+  },
+  "social": {
+    "github": "https://github.com/ISC-XDU"
+  },
+  "recruitment": {
+    "status": "closed",
+    "message": "2024 招新已结束，下次招新见 2025 春季"
+  }
+}

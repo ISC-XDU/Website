@@ -1,0 +1,17 @@
+---
+import BaseLayout from './BaseLayout.astro';
+
+interface Props {
+  title?: string;
+  description?: string;
+  containerClass?: string;
+}
+
+const { title, description, containerClass = 'py-10 md:py-16' } = Astro.props;
+---
+
+<BaseLayout title={title} description={description}>
+  <div class:list={['container-page', containerClass]}>
+    <slot />
+  </div>
+</BaseLayout>

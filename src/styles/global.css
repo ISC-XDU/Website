@@ -1,0 +1,56 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --color-bg: 255 255 255;
+    --color-fg: 26 28 33;
+    --color-muted: 105 111 125;
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    @apply bg-white text-ink-900 font-sans;
+    font-feature-settings: 'palt' 1; /* 标点挤压，更适合中文 */
+  }
+
+  /* 隐藏滚动条但保留功能（横向 carousel 用） */
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  /* 选中文本色 */
+  ::selection {
+    @apply bg-inspur-200 text-inspur-900;
+  }
+
+  /* 焦点环 */
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-inspur-500 rounded;
+  }
+}
+
+@layer components {
+  .container-page {
+    @apply mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8;
+  }
+
+  .heading-display {
+    @apply font-display font-bold tracking-tight;
+  }
+
+  .prose-cn p {
+    @apply leading-relaxed;
+  }
+}

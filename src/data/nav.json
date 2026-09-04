@@ -1,0 +1,14 @@
+[
+  { "label": "主页", "href": "/" },
+  { "label": "介绍", "href": "/introduce" },
+  {
+    "label": "团队",
+    "href": "#",
+    "children": [
+      { "label": "技术部", "href": "/tech" },
+      { "label": "运营部", "href": "/operate" }
+    ]
+  },
+  { "label": "成员", "href": "/members" },
+  { "label": "致谢", "href": "/thanks" }
+]
