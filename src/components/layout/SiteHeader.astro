@@ -33,7 +33,7 @@ function isActive(href: string): boolean {
   <nav class="container-page" aria-label="主导航">
     <div class="flex items-center justify-between h-16">
       <!-- Logo 区（统一深色背景：浪潮集团 LOGO 主 + 浪潮俱乐部图标辅） -->
-      <a href="/" class="flex items-center gap-2 group" aria-label={`${siteData.name} 首页`}>
+      <a href="/" class="flex items-center group" aria-label={`${siteData.name} 首页`}>
         {isHome ? (
           <>
             {/* 主页：西电红章（外链）+ 浪潮集团 LOGO（首页内链） */}
@@ -51,7 +51,7 @@ function isActive(href: string): boolean {
                 style="background: transparent;"
               />
             </a>
-            <span class="hidden sm:inline-block w-px h-7 bg-white/20 mx-1" aria-hidden="true"></span>
+            <span class="hidden sm:inline-block w-px h-7 bg-white/20 mx-2" aria-hidden="true"></span>
             <img
               src="/img/inspur/inspur_logo.png"
               alt="浪潮集团"
@@ -59,9 +59,9 @@ function isActive(href: string): boolean {
               style="background: transparent; mix-blend-mode: screen;"
             />
             <span
-              class="font-display font-bold text-base sm:text-lg text-white hidden md:inline tracking-wide"
+              class="font-display font-bold text-base sm:text-lg text-white hidden md:inline tracking-wide ml-2"
             >
-              · {siteData.shortName}
+              {siteData.shortName}
             </span>
           </>
         ) : (
@@ -73,7 +73,7 @@ function isActive(href: string): boolean {
               class="h-8 sm:h-9 w-auto opacity-95 transition-transform group-hover:scale-105"
               style="background: transparent; mix-blend-mode: screen;"
             />
-            <span class="hidden sm:inline-block w-px h-6 bg-white/20 mx-1" aria-hidden="true"></span>
+            <span class="hidden sm:inline-block w-px h-6 bg-white/20 mx-2" aria-hidden="true"></span>
             <img
               src="/img/icon/inspur.png"
               alt="浪潮俱乐部"
@@ -81,7 +81,7 @@ function isActive(href: string): boolean {
               style="background: transparent;"
             />
             <span
-              class="font-display font-bold text-base text-white hidden md:inline tracking-wide"
+              class="font-display font-bold text-base text-white hidden md:inline tracking-wide ml-2"
             >
               {siteData.shortName}
             </span>
