@@ -1,0 +1,56 @@
+---
+import Card from '@components/ui/Card.astro';
+import Modal from '@components/ui/Modal.astro';
+import type { Member } from '@lib/members';
+
+interface Props {
+  member: Member;
+}
+
+const { member } = Astro.props;
+const modalId = `modal-member-${member.year}-${member.name}`;
+const emailLink = member.email ? `mailto:${member.email}` : null;
+---
+
+<Card class="h-full" interactive>
+  <div class="p-5 text-center flex flex-col items-center h-full">
+    <div class="w-24 h-24 rounded-full overflow-hidden bg-ink-100 mb-3 ring-2 ring-inspur-100">
+      <img
+        src={member.avatar}
+        alt={`${member.name} 头像`}
+        class="w-full h-full object-cover"
+        loading="lazy"
+        decoding="async"
+        onerror="this.style.display='none'"
+      />
+    </div>
+    <h3 class="text-base font-semibold text-ink-900 mb-2">{member.name}</h3>
+    <div class="flex items-center gap-2 text-sm flex-wrap justify-center">
+      <button
+        type="button"
+        class="text-white bg-inspur-600 hover:bg-inspur-700 px-3 py-1 rounded-md text-xs transition-colors"
+        data-modal-open={modalId}
+      >
+        查看详情
+      </button>
+      {emailLink && (
+        <a href={emailLink} class="text-inspur-600 hover:underline text-xs">Email</a>
+      )}
+    </div>
+  </div>
+</Card>
+
+<Modal id={modalId} title={`${member.name} · ${member.year} 级`} size="md">
+  {member.bio ? (
+    <p class="text-ink-700 leading-relaxed text-sm whitespace-pre-line">{member.bio}</p>
+  ) : (
+    <p class="text-ink-500 italic">暂无简介</p>
+  )}
+  {emailLink && (
+    <p class="mt-4 text-sm">
+      <a href={emailLink} class="text-inspur-600 hover:underline">
+        📧 {member.email}
+      </a>
+    </p>
+  )}
+</Modal>
