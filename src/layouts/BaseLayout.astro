@@ -10,6 +10,8 @@ interface Props {
   description?: string;
   image?: string;
   noindex?: boolean;
+  /** 强制 header 变体；不传则根据路径自动判断（'/' = home, 其他 = subpage） */
+  headerVariant?: 'home' | 'subpage';
 }
 
 const {
@@ -17,7 +19,11 @@ const {
   description = siteData.description,
   image = '/favicon.svg',
   noindex = false,
+  headerVariant,
 } = Astro.props;
+
+// 自动判断：根路径是 home，其他都是 subpage
+const variant = headerVariant ?? (Astro.url.pathname === '/' ? 'home' : 'subpage');
 
 const fullTitle = title ? `${title} | ${siteData.name}` : `${siteData.name} | ${siteData.slogan}`;
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
@@ -54,8 +60,8 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 
   <body class="min-h-screen flex flex-col">
     <SkipLink />
-    <SiteHeader />
-    <main id="main-content" class="flex-1 pt-16">
+    <SiteHeader variant={variant} />
+    <main id="main-content" class:list={['flex-1', variant === 'home' ? 'pt-16' : 'pt-16']}>
       <slot />
     </main>
     <SiteFooter />

@@ -2,31 +2,81 @@
 import navData from '@data/nav.json';
 import siteData from '@data/site.json';
 
+interface Props {
+  variant?: 'home' | 'subpage';
+}
+
+const { variant = 'subpage' } = Astro.props;
 const pathname = Astro.url.pathname;
+const isHome = variant === 'home';
 
 function isActive(href: string): boolean {
   if (href === '/') return pathname === '/';
   return pathname.startsWith(href);
 }
+
+// subpage 顶部背景：校园风景图 + 暗色渐变蒙版，保证文字可读
+const headerBgStyle = isHome
+  ? undefined
+  : "background-image: linear-gradient(rgba(15, 23, 42, 0.55), rgba(15, 23, 42, 0.65)), url('/img/xdu/xd_sunsetting.jpg'); background-size: cover; background-position: center 30%;";
 ---
 
 <header
-  class="fixed top-0 left-0 right-0 z-40 bg-white/90 backdrop-blur-md border-b border-ink-100"
+  class:list={[
+    'fixed top-0 left-0 right-0 z-40 transition-all duration-300',
+    isHome
+      ? 'bg-white/95 backdrop-blur-md border-b border-ink-100'
+      : 'border-b border-white/10 text-white',
+  ]}
+  style={headerBgStyle}
+  data-header
+  data-variant={variant}
 >
+  {/* 首页进度条（wpkoi 风格） */}
+  <div
+    class="absolute bottom-0 left-0 h-0.5 bg-inspur-400 origin-left scale-x-0 transition-transform duration-150"
+    data-scroll-progress
+    aria-hidden="true"
+  ></div>
+
   <nav class="container-page" aria-label="主导航">
     <div class="flex items-center justify-between h-16">
-      <!-- Logo -->
+      <!-- Logo 区 -->
       <a href="/" class="flex items-center gap-2 group" aria-label={`${siteData.name} 首页`}>
-        <img
-          src="/favicon.svg"
-          width="32"
-          height="32"
-          alt=""
-          class="transition-transform group-hover:scale-105"
-        />
-        <span class="font-display font-bold text-lg text-ink-900 hidden sm:inline">
-          {siteData.shortName}
-        </span>
+        {isHome ? (
+          <>
+            <img
+              src="/img/xdu/xdulogo.png"
+              width="44"
+              height="44"
+              alt="西安电子科技大学"
+              class="transition-transform group-hover:scale-105"
+            />
+            <span class="hidden sm:inline-block w-px h-8 bg-ink-200" aria-hidden="true"></span>
+            <img
+              src="/img/inspur/inspur_logo.png"
+              width="44"
+              height="44"
+              alt="浪潮"
+              class="opacity-90 transition-transform group-hover:scale-105"
+            />
+          </>
+        ) : (
+          <>
+            <img
+              src="/img/inspur/inspur_logo_white.png"
+              width="40"
+              height="40"
+              alt="浪潮俱乐部"
+              class="drop-shadow-md transition-transform group-hover:scale-105"
+            />
+            <span
+              class="font-display font-bold text-lg text-white drop-shadow-md hidden sm:inline tracking-wide"
+            >
+              {siteData.shortName}
+            </span>
+          </>
+        )}
       </a>
 
       <!-- Desktop nav -->
@@ -38,7 +88,12 @@ function isActive(href: string): boolean {
                 <>
                   <button
                     type="button"
-                    class="px-3 py-2 text-sm font-medium text-ink-700 hover:text-inspur-600 rounded-md transition-colors flex items-center gap-1"
+                    class:list={[
+                      'px-3 py-2 text-sm font-medium rounded-md transition-colors flex items-center gap-1',
+                      isHome
+                        ? 'text-ink-700 hover:text-inspur-600'
+                        : 'text-white/90 hover:text-white',
+                    ]}
                     aria-haspopup="true"
                     aria-expanded="false"
                     data-dropdown-trigger
@@ -81,14 +136,25 @@ function isActive(href: string): boolean {
                 <a
                   href={item.href}
                   class:list={[
-                    'px-3 py-2 text-sm font-medium rounded-md transition-colors',
-                    isActive(item.href)
-                      ? 'text-inspur-600'
-                      : 'text-ink-700 hover:text-inspur-600',
+                    'px-3 py-2 text-sm font-medium rounded-md transition-colors relative',
+                    isHome
+                      ? isActive(item.href)
+                        ? 'text-inspur-600'
+                        : 'text-ink-700 hover:text-inspur-600'
+                      : isActive(item.href)
+                        ? 'text-white'
+                        : 'text-white/85 hover:text-white',
                   ]}
                   aria-current={isActive(item.href) ? 'page' : undefined}
                 >
                   {item.label}
+                  {/* 当前页底部小竖线指示 */}
+                  {isActive(item.href) && !isHome && (
+                    <span
+                      class="absolute -bottom-1 left-3 right-3 h-0.5 bg-white rounded-full"
+                      aria-hidden="true"
+                    ></span>
+                  )}
                 </a>
               )}
             </li>
@@ -99,7 +165,10 @@ function isActive(href: string): boolean {
       <!-- Mobile menu button -->
       <button
         type="button"
-        class="md:hidden p-2 rounded-md text-ink-700 hover:bg-ink-50"
+        class:list={[
+          'md:hidden p-2 rounded-md transition-colors',
+          isHome ? 'text-ink-700 hover:bg-ink-50' : 'text-white hover:bg-white/10',
+        ]}
         aria-label="打开菜单"
         aria-expanded="false"
         aria-controls="mobile-menu"
@@ -119,7 +188,10 @@ function isActive(href: string): boolean {
     <!-- Mobile menu -->
     <div
       id="mobile-menu"
-      class="hidden md:hidden border-t border-ink-100 py-3"
+      class:list={[
+        'hidden md:hidden py-3',
+        isHome ? 'border-t border-ink-100' : 'border-t border-white/10',
+      ]}
       data-mobile-menu
     >
       <ul class="space-y-1">
@@ -128,7 +200,12 @@ function isActive(href: string): boolean {
             <li>
               {item.children ? (
                 <details class="group">
-                  <summary class="flex items-center justify-between px-3 py-2 text-sm font-medium text-ink-700 rounded-md cursor-pointer hover:bg-ink-50">
+                  <summary
+                    class:list={[
+                      'flex items-center justify-between px-3 py-2 text-sm font-medium rounded-md cursor-pointer transition-colors',
+                      isHome ? 'text-ink-700 hover:bg-ink-50' : 'text-white/90 hover:bg-white/10',
+                    ]}
+                  >
                     {item.label}
                     <svg
                       class="w-4 h-4 transition-transform group-open:rotate-180"
@@ -143,16 +220,25 @@ function isActive(href: string): boolean {
                       />
                     </svg>
                   </summary>
-                  <ul class="mt-1 ml-4 space-y-1 border-l-2 border-ink-100 pl-2">
+                  <ul
+                    class:list={[
+                      'mt-1 ml-4 space-y-1 pl-2',
+                      isHome ? 'border-l-2 border-ink-100' : 'border-l-2 border-white/20',
+                    ]}
+                  >
                     {item.children.map((child) => (
                       <li>
                         <a
                           href={child.href}
                           class:list={[
-                            'block px-3 py-2 text-sm rounded-md',
-                            isActive(child.href)
-                              ? 'text-inspur-600 font-medium'
-                              : 'text-ink-600 hover:bg-ink-50',
+                            'block px-3 py-2 text-sm rounded-md transition-colors',
+                            isHome
+                              ? isActive(child.href)
+                                ? 'text-inspur-600 font-medium'
+                                : 'text-ink-600 hover:bg-ink-50'
+                              : isActive(child.href)
+                                ? 'text-white font-medium'
+                                : 'text-white/80 hover:bg-white/10',
                           ]}
                         >
                           {child.label}
@@ -165,10 +251,14 @@ function isActive(href: string): boolean {
                 <a
                   href={item.href}
                   class:list={[
-                    'block px-3 py-2 text-sm font-medium rounded-md',
-                    isActive(item.href)
-                      ? 'text-inspur-600 bg-inspur-50'
-                      : 'text-ink-700 hover:bg-ink-50',
+                    'block px-3 py-2 text-sm font-medium rounded-md transition-colors',
+                    isHome
+                      ? isActive(item.href)
+                        ? 'text-inspur-600 bg-inspur-50'
+                        : 'text-ink-700 hover:bg-ink-50'
+                      : isActive(item.href)
+                        ? 'text-white bg-white/10'
+                        : 'text-white/90 hover:bg-white/10',
                   ]}
                 >
                   {item.label}
@@ -183,7 +273,7 @@ function isActive(href: string): boolean {
 </header>
 
 <script>
-  // 移动端菜单开关
+  // 1. 移动端菜单开关
   const trigger = document.querySelector('[data-mobile-menu-trigger]');
   const menu = document.querySelector('[data-mobile-menu]');
   if (trigger && menu) {
@@ -191,6 +281,61 @@ function isActive(href: string): boolean {
       const expanded = trigger.getAttribute('aria-expanded') === 'true';
       trigger.setAttribute('aria-expanded', String(!expanded));
       menu.classList.toggle('hidden');
+    });
+  }
+
+  // 2. wpkoi 风格：滚动进度条 + 滚动时头部磨砂加深
+  const header = document.querySelector('[data-header]') as HTMLElement | null;
+  const progress = document.querySelector('[data-scroll-progress]') as HTMLElement | null;
+  const variant = header?.dataset.variant;
+
+  function onScroll() {
+    const doc = document.documentElement;
+    const total = doc.scrollHeight - doc.clientHeight;
+    const pct = total > 0 ? doc.scrollTop / total : 0;
+
+    if (progress) {
+      progress.style.transform = `scaleX(${pct})`;
+    }
+
+    // subpage 头部：滚动时增加毛玻璃
+    if (header && variant === 'subpage') {
+      const style = header.style as CSSStyleDeclaration & {
+        webkitBackdropFilter?: string;
+      };
+      if (doc.scrollTop > 20) {
+        style.backdropFilter = 'blur(8px)';
+        style.webkitBackdropFilter = 'blur(8px)';
+        style.backgroundColor = 'rgba(15, 23, 42, 0.35)';
+      } else {
+        style.backdropFilter = '';
+        style.webkitBackdropFilter = '';
+        style.backgroundColor = '';
+      }
+    }
+  }
+
+  document.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+
+  // 3. wpkoi 风格：滚动进入视口时元素淡入上浮
+  if ('IntersectionObserver' in window) {
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-revealed');
+            io.unobserve(entry.target);
+          }
+        }
+      },
+      { threshold: 0.12, rootMargin: '0px 0px -60px 0px' }
+    );
+    document.querySelectorAll<HTMLElement>('.reveal').forEach((el) => io.observe(el));
+  } else {
+    // 降级：直接全部显示
+    document.querySelectorAll<HTMLElement>('.reveal').forEach((el) => {
+      el.classList.add('is-revealed');
     });
   }
 </script>

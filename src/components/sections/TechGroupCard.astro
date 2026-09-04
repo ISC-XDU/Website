@@ -13,7 +13,7 @@ const isEven = index % 2 === 0;
 const variant = isEven ? 'default' : 'muted';
 ---
 
-<Section background={variant} containerClass="!py-12 md:!py-16">
+<Section background={variant} containerClass="!py-12 md:!py-16" reveal>
   <div class="text-center mb-8">
     <h2 class="heading-display text-3xl md:text-4xl text-ink-900 inline-block px-6 py-2 border-4 border-ink-200 rounded-2xl">
       {group.data.name}
