@@ -1,0 +1,170 @@
+---
+interface Slide {
+  src: string;
+  alt: string;
+  caption?: string;
+  title?: string;
+}
+
+interface Props {
+  slides: Slide[];
+  aspectRatio?: '4-3' | '16-9' | '3-2' | '1-1';
+  autoplay?: boolean;
+  interval?: number;
+}
+
+const {
+  slides,
+  aspectRatio = '4-3',
+  autoplay = false,
+  interval = 5000,
+} = Astro.props;
+
+const aspectClass = {
+  '4-3': 'aspect-[4/3]',
+  '16-9': 'aspect-video',
+  '3-2': 'aspect-[3/2]',
+  '1-1': 'aspect-square',
+}[aspectRatio];
+
+const carouselId = `carousel-${Math.random().toString(36).slice(2, 9)}`;
+---
+
+<div
+  id={carouselId}
+  class="relative overflow-hidden rounded-xl bg-ink-100"
+  data-carousel
+  data-autoplay={autoplay ? 'true' : 'false'}
+  data-interval={interval}
+>
+  <div class="flex transition-transform duration-500 ease-out" data-carousel-track>
+    {
+      slides.map((slide, i) => (
+        <div class="w-full flex-shrink-0" data-carousel-slide>
+          <div class:list={['relative w-full', aspectClass]}>
+            <img
+              src={slide.src}
+              alt={slide.alt}
+              class="absolute inset-0 w-full h-full object-cover"
+              loading={i === 0 ? 'eager' : 'lazy'}
+              decoding="async"
+            />
+            {(slide.title || slide.caption) && (
+              <div class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-ink-900/80 to-transparent p-5 text-white">
+                {slide.title && <h3 class="text-lg font-semibold mb-1">{slide.title}</h3>}
+                {slide.caption && <p class="text-sm text-ink-100">{slide.caption}</p>}
+              </div>
+            )}
+          </div>
+        </div>
+      ))
+    }
+  </div>
+
+  <!-- 指示器 -->
+  {
+    slides.length > 1 && (
+      <div class="absolute bottom-3 left-0 right-0 flex justify-center gap-2 z-10">
+        {slides.map((_, i) => (
+          <button
+            type="button"
+            class="w-2 h-2 rounded-full bg-white/60 hover:bg-white transition-all data-[active=true]:bg-white data-[active=true]:w-6"
+            aria-label={`第 ${i + 1} 张`}
+            data-carousel-indicator
+            data-index={i}
+          />
+        ))}
+      </div>
+    )
+  }
+
+  <!-- 左右按钮 -->
+  {
+    slides.length > 1 && (
+      <>
+        <button
+          type="button"
+          class="absolute left-2 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/80 hover:bg-white text-ink-900 flex items-center justify-center shadow-md transition-all opacity-0 hover:opacity-100 group-hover:opacity-100"
+          aria-label="上一张"
+          data-carousel-prev
+        >
+          <svg class="w-5 h-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+            <path
+              fill-rule="evenodd"
+              d="M12.79 5.23a.75.75 0 01-.02 1.06L8.832 10l3.938 3.71a.75.75 0 11-1.04 1.08l-4.5-4.25a.75.75 0 010-1.08l4.5-4.25a.75.75 0 011.06.02z"
+              clip-rule="evenodd"
+            />
+          </svg>
+        </button>
+        <button
+          type="button"
+          class="absolute right-2 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/80 hover:bg-white text-ink-900 flex items-center justify-center shadow-md transition-all opacity-0 hover:opacity-100 group-hover:opacity-100"
+          aria-label="下一张"
+          data-carousel-next
+        >
+          <svg class="w-5 h-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+            <path
+              fill-rule="evenodd"
+              d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z"
+              clip-rule="evenodd"
+            />
+          </svg>
+        </button>
+      </>
+    )
+  }
+</div>
+
+<script>
+  function setupCarousel(root: HTMLElement) {
+    const track = root.querySelector('[data-carousel-track]') as HTMLElement | null;
+    const slides = root.querySelectorAll('[data-carousel-slide]');
+    const indicators = root.querySelectorAll('[data-carousel-indicator]');
+    const prevBtn = root.querySelector('[data-carousel-prev]');
+    const nextBtn = root.querySelector('[data-carousel-next]');
+    if (!track || slides.length === 0) return;
+
+    let current = 0;
+    let timer: number | undefined;
+
+    const update = () => {
+      track.style.transform = `translateX(-${current * 100}%)`;
+      indicators.forEach((ind, i) => {
+        (ind as HTMLElement).dataset.active = i === current ? 'true' : 'false';
+      });
+    };
+
+    const go = (i: number) => {
+      current = (i + slides.length) % slides.length;
+      update();
+    };
+
+    prevBtn?.addEventListener('click', () => go(current - 1));
+    nextBtn?.addEventListener('click', () => go(current + 1));
+    indicators.forEach((ind, i) =>
+      ind.addEventListener('click', () => {
+        go(i);
+        restart();
+      })
+    );
+
+    const start = () => {
+      if (root.dataset.autoplay !== 'true') return;
+      timer = window.setInterval(() => go(current + 1), Number(root.dataset.interval) || 5000);
+    };
+    const stop = () => {
+      if (timer) clearInterval(timer);
+    };
+    const restart = () => {
+      stop();
+      start();
+    };
+
+    root.addEventListener('mouseenter', stop);
+    root.addEventListener('mouseleave', start);
+
+    update();
+    start();
+  }
+  document.querySelectorAll<HTMLElement>('[data-carousel]').forEach(setupCarousel);
+</script>

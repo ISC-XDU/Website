@@ -1,0 +1,68 @@
+---
+import Section from '@components/ui/Section.astro';
+import Card from '@components/ui/Card.astro';
+
+const items = [
+  {
+    title: '编码技术',
+    icon: '/img/icon/program.png',
+    summary: '如果你对编程感兴趣，那浪潮一定不会让你失望。',
+    body: '这里聚集了西电各路编程达人，从网站开发到机器学习，亦或是网络攻防、算法竞赛，无论你对哪方面感兴趣，你都可以在浪潮俱乐部学到想学的知识，极大地提升编程能力。',
+    accent: 'inspur',
+  },
+  {
+    title: '运营能力',
+    icon: '/img/icon/operation.png',
+    summary: '如果你对宣传、管理类工作青睐，这里同样适合你。',
+    body: '浪潮同样需要负责运营、宣传的同学来维护俱乐部的正常运作，活动安排、宣传工作、资金流转等等事宜，会给你管理与运营能力上极大的锻炼与提升。',
+    accent: 'ink',
+  },
+  {
+    title: '团队意识',
+    icon: '/img/icon/cooperation.png',
+    summary: '在浪潮，你不是一个人孤军奋战。',
+    body: '不论你加入哪个部门、技术组，你都将和队友、学长学姐一同学习，在交流中进步，在互助中成长。技术的交锋碰撞火花，思想的汇聚凝练智慧。',
+    accent: 'ink',
+  },
+  {
+    title: '学习能力',
+    icon: '/img/icon/study.png',
+    summary: '是的，浪潮人不仅技术强，学业上更是锋芒乍现。',
+    body: '这里有推免清北的前辈，不乏保研名校的强者，更有均分名列前茅的学长学姐。浪潮前后辈关系都非常融洽，倾囊相授之下相信定能收获不少。',
+    accent: 'inspur',
+  },
+];
+---
+
+<Section background="default">
+  <div class="text-center max-w-2xl mx-auto mb-10">
+    <h2 class="heading-display text-3xl md:text-4xl text-ink-900">
+      我能在浪潮收获什么？
+    </h2>
+    <p class="mt-3 text-ink-600">技术、运营、团队、学习，四大方向全面成长</p>
+  </div>
+
+  <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
+    {
+      items.map((item) => (
+        <Card class="h-full" interactive>
+          <div
+            class:list={[
+              'p-6 text-white h-full flex flex-col',
+              item.accent === 'inspur' ? 'bg-inspur-600' : 'bg-ink-800',
+            ]}
+          >
+            <div class="flex items-center gap-3 mb-3">
+              <img src={item.icon} alt="" class="w-12 h-12" loading="lazy" />
+              <h3 class="text-xl font-semibold">{item.title}</h3>
+            </div>
+            <p class="text-sm text-white/90 font-medium">{item.summary}</p>
+            <p class="mt-3 text-sm text-white/80 leading-relaxed flex-1">
+              {item.body}
+            </p>
+          </div>
+        </Card>
+      ))
+    }
+  </div>
+</Section>

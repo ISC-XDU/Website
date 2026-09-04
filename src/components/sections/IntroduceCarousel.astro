@@ -1,0 +1,46 @@
+---
+import { getCollection } from 'astro:content';
+import Section from '@components/ui/Section.astro';
+import Carousel from '@components/ui/Carousel.astro';
+
+const activities = await getCollection('activities');
+const slides = activities
+  .sort((a, b) => a.data.date.getTime() - b.data.date.getTime())
+  .map((a) => ({
+    src: a.data.cover ?? '/img/inspur/6.jpg',
+    alt: a.data.title,
+    title: a.data.title,
+    caption: a.data.description,
+  }));
+---
+
+<Section background="default">
+  <div class="text-center max-w-2xl mx-auto mb-8">
+    <h2 class="heading-display text-3xl md:text-4xl text-ink-900">活动展示</h2>
+    <p class="mt-3 text-ink-600">浪潮每一场精彩活动的瞬间</p>
+  </div>
+
+  {
+    slides.length > 0 ? (
+      <Carousel slides={slides} aspectRatio="4-3" autoplay interval={5000} />
+    ) : (
+      <div class="rounded-xl bg-ink-100 aspect-[4/3] flex items-center justify-center text-ink-500">
+        活动回顾内容待补充
+      </div>
+    )
+  }
+
+  <div class="mt-8 text-center">
+    <p class="text-ink-700">
+      心动了吗？
+      <a
+        href="http://qm.qq.com/cgi-bin/qm/qr?_wv=1027&k=a8Y8NR-m69A3mMLeTFJL1eKM5OcqUiNn&authKey=D4OLWI%2BwQCPie1hnHDAs93iZjlg9LCca5RdO%2BvxeHaumgeU2Af%2BKKuawXFJhS88%2F&noverify=0&group_code=860063761"
+        class="text-inspur-600 font-semibold hover:underline"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        快来加入我们吧！
+      </a>
+    </p>
+  </div>
+</Section>

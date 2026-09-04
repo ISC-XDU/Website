@@ -1,8 +1,17 @@
 ---
 import PageLayout from '@layouts/PageLayout.astro';
+import IntroduceCarousel from '@components/sections/IntroduceCarousel.astro';
+import StatsBar from '@components/ui/StatsBar.astro';
+import IntroduceOverview from '@components/sections/IntroduceOverview.astro';
 ---
 
-<PageLayout title="介绍">
-  <h1 class="heading-display text-4xl md:text-5xl text-ink-900">俱乐部介绍</h1>
-  <p class="mt-4 text-lg text-ink-600">介绍页（建设中）</p>
+<PageLayout
+  title="俱乐部介绍"
+  description="西电浪潮俱乐部（XDU ISC）成立于 2017 年，浪潮集团与西电计算机学院共建的校企联合俱乐部。"
+>
+  <div class="pt-6 md:pt-10">
+    <IntroduceCarousel />
+    <StatsBar />
+    <IntroduceOverview />
+  </div>
 </PageLayout>

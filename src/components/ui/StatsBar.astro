@@ -1,0 +1,39 @@
+---
+import Section from './Section.astro';
+import siteData from '@data/site.json';
+
+interface Stat {
+  value: number | string;
+  label: string;
+  color?: 'primary' | 'danger' | 'success' | 'warning';
+}
+
+const colorMap = {
+  primary: 'text-inspur-600',
+  danger: 'text-xidian-500',
+  success: 'text-emerald-600',
+  warning: 'text-amber-600',
+};
+
+const stats: Stat[] = [
+  { value: siteData.stats.members, label: '成员人数', color: 'primary' },
+  { value: siteData.stats.departments, label: '部门数量', color: 'danger' },
+  { value: siteData.founded, label: '成立时间', color: 'warning' },
+  { value: siteData.stats.techGroups, label: '技术组别', color: 'success' },
+];
+---
+
+<Section background="muted" containerClass="!py-8">
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-6 text-center md:text-left">
+    {
+      stats.map((s) => (
+        <div>
+          <div class:list={['text-3xl md:text-4xl font-display font-bold', colorMap[s.color ?? 'primary']]}>
+            {s.value}
+          </div>
+          <div class="mt-1 text-sm text-ink-500">{s.label}</div>
+        </div>
+      ))
+    }
+  </div>
+</Section>

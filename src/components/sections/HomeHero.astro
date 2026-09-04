@@ -1,0 +1,68 @@
+---
+import Section from '@components/ui/Section.astro';
+import Button from '@components/ui/Button.astro';
+import siteData from '@data/site.json';
+---
+
+<Section
+  background="gradient"
+  containerClass="!py-16 md:!py-24"
+>
+  <div class="grid md:grid-cols-2 gap-10 items-center">
+    <div>
+      <p class="inline-block text-sm font-semibold text-inspur-600 bg-inspur-100 rounded-full px-3 py-1 mb-4">
+        浪潮 · ISC
+      </p>
+      <h1 class="heading-display text-4xl md:text-5xl lg:text-6xl text-ink-900">
+        加入我们成为一名 <span class="text-inspur-600">浪潮er</span>
+      </h1>
+      <p class="mt-6 text-lg text-ink-600 leading-relaxed">
+        <strong class="text-ink-900">浪潮俱乐部</strong>成立于
+        {siteData.founded} 年，是由 <strong class="text-ink-900">浪潮集团</strong> 携手我校
+        <strong class="text-ink-900">计算机学院</strong> 共同打造的
+        <strong class="text-ink-900">校企联合俱乐部</strong>。
+      </p>
+      <p class="mt-3 text-ink-600">
+        我们致力于培养成员的 <strong class="text-ink-900">学习能力</strong> 和
+        <strong class="text-ink-900">技术情怀</strong>，让所有人得到成长。
+      </p>
+      <div class="mt-8 flex flex-wrap gap-3">
+        <Button href="/introduce" size="lg">了解浪潮更多信息</Button>
+        <Button href="/tech" variant="outline" size="lg">技术部</Button>
+        <Button href="/operate" variant="ghost" size="lg">运营部</Button>
+      </div>
+
+      <div class="mt-8 flex items-center gap-2 text-sm text-ink-500">
+        <span
+          class:list={[
+            'inline-block w-2 h-2 rounded-full',
+            siteData.recruitment.status === 'open'
+              ? 'bg-emerald-500 animate-pulse'
+              : 'bg-ink-400',
+          ]}
+          aria-hidden="true"
+        ></span>
+        <span>{siteData.recruitment.message}</span>
+      </div>
+    </div>
+
+    <div class="relative hidden md:block">
+      <div class="aspect-square rounded-3xl bg-gradient-to-br from-inspur-100 to-inspur-200 flex items-center justify-center overflow-hidden">
+        <img
+          src="/img/inbetweening/2.png"
+          alt="浪潮俱乐部视觉"
+          class="w-3/4 h-3/4 object-contain"
+          loading="eager"
+        />
+      </div>
+      <div
+        class="absolute -top-4 -right-4 w-24 h-24 rounded-2xl bg-inspur-500/10 backdrop-blur"
+        aria-hidden="true"
+      ></div>
+      <div
+        class="absolute -bottom-4 -left-4 w-32 h-32 rounded-full bg-xidian-500/10 backdrop-blur"
+        aria-hidden="true"
+      ></div>
+    </div>
+  </div>
+</Section>

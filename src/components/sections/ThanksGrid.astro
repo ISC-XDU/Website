@@ -1,0 +1,150 @@
+---
+import { getCollection } from 'astro:content';
+import Section from '@components/ui/Section.astro';
+import Card from '@components/ui/Card.astro';
+import Modal from '@components/ui/Modal.astro';
+
+const partners = await getCollection('thanks');
+const grouped = {
+  company: partners.filter((p) => p.data.category === 'company'),
+  club: partners.filter((p) => p.data.category === 'club'),
+  teacher: partners.filter((p) => p.data.category === 'teacher'),
+};
+---
+
+<Section background="default">
+  <div class="text-center max-w-2xl mx-auto mb-10">
+    <h2 class="heading-display text-3xl md:text-4xl text-ink-900">俱乐部合作</h2>
+    <p class="mt-3 text-ink-600">感谢所有支持浪潮发展的伙伴们</p>
+  </div>
+
+  {
+    grouped.company.length > 0 && (
+      <div class="mb-12">
+        <h3 class="text-xl font-semibold text-ink-900 mb-5 text-center">合作公司</h3>
+        <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+          {grouped.company.map((p) => (
+            <Card class="h-full" interactive>
+              <div class="p-6 flex flex-col items-center text-center h-full">
+                {p.data.logo && (
+                  <div class="h-16 flex items-center justify-center mb-4">
+                    <img
+                      src={p.data.logo}
+                      alt={p.data.name}
+                      class="max-h-16 max-w-full object-contain"
+                      loading="lazy"
+                    />
+                  </div>
+                )}
+                <h4 class="text-lg font-semibold text-ink-900 mb-2">{p.data.name}</h4>
+                <p class="text-sm text-ink-600 text-left flex-1">
+                  {p.body?.slice(0, 80)}
+                  {p.body && p.body.length > 80 && '…'}
+                </p>
+                <button
+                  type="button"
+                  class="mt-3 text-sm text-inspur-600 hover:underline"
+                  data-modal-open={`modal-thanks-${p.slug}`}
+                >
+                  查看详情
+                </button>
+              </div>
+            </Card>
+          ))}
+        </div>
+      </div>
+    )
+  }
+
+  {
+    grouped.club.length > 0 && (
+      <div class="mb-12">
+        <h3 class="text-xl font-semibold text-ink-900 mb-5 text-center">合作俱乐部</h3>
+        <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          {grouped.club.map((p) => (
+            <Card class="h-full" interactive>
+              <div class="p-5 flex flex-col items-center text-center h-full">
+                {p.data.logo && (
+                  <div class="h-14 flex items-center justify-center mb-3">
+                    <img
+                      src={p.data.logo}
+                      alt={p.data.name}
+                      class="max-h-14 max-w-full object-contain"
+                      loading="lazy"
+                    />
+                  </div>
+                )}
+                <h4 class="text-base font-semibold text-ink-900 mb-2">{p.data.name}</h4>
+                <p class="text-xs text-ink-600 text-left flex-1">
+                  {p.body?.slice(0, 60)}
+                  {p.body && p.body.length > 60 && '…'}
+                </p>
+                <button
+                  type="button"
+                  class="mt-3 text-sm text-inspur-600 hover:underline"
+                  data-modal-open={`modal-thanks-${p.slug}`}
+                >
+                  查看详情
+                </button>
+              </div>
+            </Card>
+          ))}
+        </div>
+      </div>
+    )
+  }
+
+  {
+    grouped.teacher.length > 0 && (
+      <div>
+        <h3 class="text-xl font-semibold text-ink-900 mb-5 text-center">合作老师</h3>
+        <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+          {grouped.teacher.map((p) => (
+            <Card class="h-full" interactive>
+              <div class="p-5 flex flex-col items-center text-center">
+                {p.data.logo && (
+                  <img
+                    src={p.data.logo}
+                    alt={p.data.name}
+                    class="w-20 h-20 rounded-full object-cover mb-3"
+                    loading="lazy"
+                  />
+                )}
+                <h4 class="text-base font-semibold text-ink-900">{p.data.name}</h4>
+              </div>
+            </Card>
+          ))}
+        </div>
+      </div>
+    )
+  }
+</Section>
+
+{
+  partners.map((p) => (
+    <Modal id={`modal-thanks-${p.slug}`} title={p.data.name} size="md">
+      <div class="prose-cn text-ink-700 leading-relaxed">
+        <p>{p.body}</p>
+        {p.data.url && (
+          <p class="mt-4">
+            <a
+              href={p.data.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="text-inspur-600 hover:underline"
+            >
+              访问官网 →
+            </a>
+          </p>
+        )}
+        {p.data.email && (
+          <p class="mt-2 text-sm text-ink-500">
+            联系：<a href={`mailto:${p.data.email}`} class="hover:underline">
+              {p.data.email}
+            </a>
+          </p>
+        )}
+      </div>
+    </Modal>
+  ))
+}

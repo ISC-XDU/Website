@@ -1,0 +1,22 @@
+---
+interface Props {
+  class?: string;
+  interactive?: boolean;
+  as?: 'div' | 'article' | 'section';
+}
+
+const {
+  class: className = '',
+  interactive = false,
+  as: Tag = 'div',
+}: Props = Astro.props;
+
+const base = 'bg-white rounded-xl border border-ink-100 overflow-hidden';
+const interactiveClasses = interactive
+  ? 'transition-all hover:shadow-lg hover:-translate-y-0.5 hover:border-inspur-200'
+  : '';
+---
+
+<Tag class:list={[base, interactiveClasses, className]}>
+  <slot />
+</Tag>

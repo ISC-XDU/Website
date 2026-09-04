@@ -1,0 +1,76 @@
+---
+interface Item {
+  id: string;
+  title: string;
+  body: string; // 简单 HTML 字符串
+}
+
+interface Props {
+  items: Item[];
+  variant?: 'flush' | 'bordered';
+}
+
+const { items, variant = 'bordered' } = Astro.props;
+---
+
+<div
+  class:list={[
+    'divide-y divide-ink-100 rounded-xl overflow-hidden',
+    variant === 'bordered' ? 'border border-ink-100' : '',
+  ]}
+  data-accordion
+>
+  {
+    items.map((item) => (
+      <div class="group">
+        <button
+          type="button"
+          class="w-full flex items-center justify-between gap-4 px-5 py-4 text-left hover:bg-ink-50 transition-colors"
+          aria-expanded="false"
+          aria-controls={item.id}
+          data-accordion-trigger
+        >
+          <span class="font-medium text-ink-900">{item.title}</span>
+          <svg
+            class="w-5 h-5 text-ink-500 transition-transform group-aria-expanded:rotate-180"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+            aria-hidden="true"
+          >
+            <path
+              fill-rule="evenodd"
+              d="M5.23 7.21a.75.75 0 011.06.02L10 11.06l3.71-3.83a.75.75 0 111.08 1.04l-4.25 4.39a.75.75 0 01-1.08 0L5.21 8.27a.75.75 0 01.02-1.06z"
+              clip-rule="evenodd"
+            />
+          </svg>
+        </button>
+        <div
+          id={item.id}
+          class="hidden px-5 pb-5 text-ink-600 leading-relaxed"
+          data-accordion-content
+        >
+          <Fragment set:html={item.body} />
+        </div>
+      </div>
+    ))
+  }
+</div>
+
+<script>
+  function setupAccordion(root: HTMLElement) {
+    const triggers = root.querySelectorAll('[data-accordion-trigger]');
+    triggers.forEach((trigger) => {
+      trigger.addEventListener('click', () => {
+        const expanded = trigger.getAttribute('aria-expanded') === 'true';
+        const contentId = trigger.getAttribute('aria-controls');
+        if (!contentId) return;
+        const content = document.getElementById(contentId);
+        if (!content) return;
+
+        trigger.setAttribute('aria-expanded', String(!expanded));
+        content.classList.toggle('hidden');
+      });
+    });
+  }
+  document.querySelectorAll<HTMLElement>('[data-accordion]').forEach(setupAccordion);
+</script>

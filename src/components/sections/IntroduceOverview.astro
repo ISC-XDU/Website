@@ -1,0 +1,78 @@
+---
+import Section from '@components/ui/Section.astro';
+import Card from '@components/ui/Card.astro';
+import siteData from '@data/site.json';
+---
+
+<Section background="default">
+  <div class="text-center max-w-2xl mx-auto mb-10">
+    <h2 class="heading-display text-3xl md:text-4xl text-ink-900">俱乐部概览</h2>
+  </div>
+
+  <div class="prose-cn max-w-3xl mx-auto text-ink-700 leading-relaxed space-y-4">
+    <p>
+      西电浪潮俱乐部（Inspur Student Club，简称
+      <strong class="text-ink-900">ISC</strong>）成立于 {siteData.founded} 年，我们以企业资源为依托，为同学们打造一个
+      <strong class="text-ink-900">提升就业技能</strong> 以及
+      <strong class="text-ink-900">增加知识储备</strong> 的平台。
+    </p>
+    <p>
+      通过技术培训、学术讲座、浪潮集团参观访问、技术茶话会等活动，俱乐部已为往届同学提供了一个高水平的机器学习、数据挖掘、算法竞赛平台；并给予包括但不限于
+      <strong class="text-ink-900">实习、就业、升学</strong> 等方面的指导和帮助。
+    </p>
+    <p>
+      目前，浪潮俱乐部构成主要分为 <strong class="text-inspur-600">技术部</strong> 和
+      <strong class="text-xidian-500">运营部</strong> 两大模块。
+    </p>
+  </div>
+
+  <div class="grid md:grid-cols-2 gap-6 mt-10 max-w-4xl mx-auto">
+    <Card class="h-full" interactive>
+      <div class="p-6 flex gap-4">
+        <img
+          src="/img/inbetweening/3.png"
+          alt=""
+          class="w-24 h-24 object-contain flex-shrink-0 hidden md:block"
+          loading="lazy"
+        />
+        <div>
+          <h3 class="text-xl font-semibold text-ink-900 mb-2">技术部</h3>
+          <p class="text-sm text-ink-600">
+            我们针对各个组别主要进行相关技术的学习运用，帮助每个同学创造更多可能。
+          </p>
+          <p class="text-sm text-ink-500 mt-1">现有 ACM 组、AI 组、WEB 组、系统组</p>
+          <a
+            href="/tech"
+            class="inline-block mt-3 text-sm text-white bg-ink-800 hover:bg-ink-900 px-4 py-1.5 rounded-md transition-colors"
+          >
+            查看更多 →
+          </a>
+        </div>
+      </div>
+    </Card>
+
+    <Card class="h-full" interactive>
+      <div class="p-6 flex gap-4">
+        <img
+          src="/img/inbetweening/1.png"
+          alt=""
+          class="w-24 h-24 object-contain flex-shrink-0 hidden md:block"
+          loading="lazy"
+        />
+        <div>
+          <h3 class="text-xl font-semibold text-ink-900 mb-2">运营部</h3>
+          <p class="text-sm text-ink-600">
+            我们是浪潮的打理人、护航者，致力于挖掘成员潜力，让所有人各尽其才。
+          </p>
+          <p class="text-sm text-ink-500 mt-1">活动 / 宣传 / 运营 三块工作</p>
+          <a
+            href="/operate"
+            class="inline-block mt-3 text-sm text-white bg-inspur-600 hover:bg-inspur-700 px-4 py-1.5 rounded-md transition-colors"
+          >
+            了解更多 →
+          </a>
+        </div>
+      </div>
+    </Card>
+  </div>
+</Section>

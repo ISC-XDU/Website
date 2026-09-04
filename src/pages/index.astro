@@ -1,8 +1,15 @@
 ---
 import PageLayout from '@layouts/PageLayout.astro';
+import HomeHero from '@components/sections/HomeHero.astro';
+import HomeShowcase from '@components/sections/HomeShowcase.astro';
+import HomeFAQ from '@components/sections/HomeFAQ.astro';
 ---
 
-<PageLayout title="主页">
-  <h1 class="heading-display text-4xl md:text-5xl text-ink-900">西电浪潮俱乐部</h1>
-  <p class="mt-4 text-lg text-ink-600">主页（建设中）</p>
+<PageLayout
+  title="主页"
+  description="西电浪潮俱乐部（XDU ISC）官方网站，加入浪潮，成为一名浪潮er。"
+>
+  <HomeHero />
+  <HomeShowcase />
+  <HomeFAQ />
 </PageLayout>

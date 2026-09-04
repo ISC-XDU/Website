@@ -1,8 +1,13 @@
 ---
 import PageLayout from '@layouts/PageLayout.astro';
+import ThanksGrid from '@components/sections/ThanksGrid.astro';
 ---
 
-<PageLayout title="致谢">
-  <h1 class="heading-display text-4xl md:text-5xl text-ink-900">致谢</h1>
-  <p class="mt-4 text-lg text-ink-600">致谢页（建设中）</p>
+<PageLayout
+  title="致谢"
+  description="感谢所有支持浪潮俱乐部发展的合作伙伴。"
+>
+  <div class="pt-6">
+    <ThanksGrid />
+  </div>
 </PageLayout>
