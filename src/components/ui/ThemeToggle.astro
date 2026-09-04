@@ -55,17 +55,21 @@
     class="theme-toggle-label absolute inset-0 block rounded-full border-2 border-ink-900
            bg-white"
   >
-    {/* 太阳（亮模式亮） */}
-    <span
-      class="theme-toggle-sun absolute left-2 top-1/2 -translate-y-1/2 w-3.5 h-3.5 rounded-full border-2 border-ink-900"
-      aria-hidden="true"
-    ></span>
+    {/* 太阳（亮模式亮）—— 外层定位 + 内层缩放，避免 transform 链冲突 */}
+    <span class="absolute left-2 top-1/2 -translate-y-1/2 w-3.5 h-3.5">
+      <span
+        class="theme-toggle-sun block w-full h-full rounded-full border-2 border-ink-900"
+        aria-hidden="true"
+      ></span>
+    </span>
 
-    {/* 月牙（暗模式亮） */}
-    <span
-      class="theme-toggle-moon absolute right-2 top-1/2 -translate-y-1/2 w-3.5 h-1 rounded-full bg-ink-900"
-      aria-hidden="true"
-    ></span>
+    {/* 月牙（暗模式亮）—— 同样嵌套 */}
+    <span class="absolute right-2 top-1/2 -translate-y-1/2 w-3.5 h-1">
+      <span
+        class="theme-toggle-moon block w-full h-full rounded-full bg-ink-900"
+        aria-hidden="true"
+      ></span>
+    </span>
   </span>
 </label>
 
