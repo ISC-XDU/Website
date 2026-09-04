@@ -13,9 +13,28 @@ const activities = defineCollection({
 const techGroups = defineCollection({
   type: 'content',
   schema: z.object({
-    name: z.string(), // ACM 组 / AI 组 / WEB 组 / 系统组
+    name: z.string(), // Web 组 / AI 组 / Agent 组 / ACM 组
     order: z.number().default(99),
     tagline: z.string().optional(),
+    /** 简短口号（副标题），如 "网页与全栈开发" */
+    pitch: z.string().optional(),
+    /** 适合谁 / 招新条件 */
+    forWhom: z.string().optional(),
+    /** 主图（AI 生成的插画） */
+    heroImage: z.string().optional(),
+    /** 配色 accent（'inspur' | 'ai' | 'agent' | 'acm'） */
+    accent: z.enum(['inspur', 'ai', 'agent', 'acm']).default('inspur'),
+    /** "你将收获" 列表 */
+    gains: z
+      .array(
+        z.object({
+          title: z.string(),
+          detail: z.string(),
+        })
+      )
+      .optional(),
+    /** 学习路径 / 工具栈 / 标签云 */
+    bullets: z.array(z.string()).optional(),
   }),
 });
 

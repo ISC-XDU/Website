@@ -1,5 +1,6 @@
 ---
 import type { CollectionEntry } from 'astro:content';
+import Card from '@components/ui/Card.astro';
 import Section from '@components/ui/Section.astro';
 
 interface Props {
@@ -9,21 +10,179 @@ interface Props {
 
 const { group, index } = Astro.props;
 const { Content } = await group.render();
-const isEven = index % 2 === 0;
-const variant = isEven ? 'default' : 'muted';
+const accent = group.data.accent ?? 'inspur';
+const reverse = index % 2 === 1; // 奇数 index 翻转图文位置
+const hasImage = !!group.data.heroImage;
+
+// 4 个组各自的配色（暗色 / 浅色 + accent）
+const palettes = {
+  inspur: {
+    eyebrow: 'text-inspur-600',
+    eyebrowBg: 'bg-inspur-50',
+    title: 'text-ink-900',
+    pill: 'bg-inspur-100 text-inspur-700',
+    pillText: 'text-inspur-700',
+    bullet: 'bg-inspur-500',
+    body: 'text-ink-700',
+    cta: 'bg-inspur-600 hover:bg-inspur-700 text-white',
+    sectionBg: 'bg-white',
+  },
+  ai: {
+    eyebrow: 'text-violet-600',
+    eyebrowBg: 'bg-violet-50',
+    title: 'text-ink-900',
+    pill: 'bg-violet-100 text-violet-700',
+    pillText: 'text-violet-700',
+    bullet: 'bg-violet-500',
+    body: 'text-ink-700',
+    cta: 'bg-violet-600 hover:bg-violet-700 text-white',
+    sectionBg: 'bg-gradient-to-br from-violet-50/60 via-white to-white',
+  },
+  agent: {
+    eyebrow: 'text-emerald-600',
+    eyebrowBg: 'bg-emerald-50',
+    title: 'text-ink-900',
+    pill: 'bg-emerald-100 text-emerald-700',
+    pillText: 'text-emerald-700',
+    bullet: 'bg-emerald-500',
+    body: 'text-ink-700',
+    cta: 'bg-emerald-600 hover:bg-emerald-700 text-white',
+    sectionBg: 'bg-gradient-to-br from-emerald-50/60 via-white to-white',
+  },
+  acm: {
+    eyebrow: 'text-amber-700',
+    eyebrowBg: 'bg-amber-50',
+    title: 'text-ink-900',
+    pill: 'bg-amber-100 text-amber-700',
+    pillText: 'text-amber-700',
+    bullet: 'bg-amber-500',
+    body: 'text-ink-700',
+    cta: 'bg-amber-600 hover:bg-amber-700 text-white',
+    sectionBg: 'bg-gradient-to-br from-amber-50/40 via-white to-white',
+  },
+} as const;
+const p = palettes[accent as keyof typeof palettes];
 ---
 
-<Section background={variant} containerClass="!py-12 md:!py-16" reveal>
-  <div class="text-center mb-8">
-    <h2 class="heading-display text-3xl md:text-4xl text-ink-900 inline-block px-6 py-2 border-4 border-ink-200 rounded-2xl">
+<Section background="default" containerClass="!py-12 md:!py-20" reveal>
+  <div class:list={['text-center max-w-3xl mx-auto mb-10', p.sectionBg === 'bg-white' ? '' : 'rounded-3xl px-4']}>
+    <span
+      class:list={[
+        'inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider rounded-full px-3 py-1 mb-3',
+        p.eyebrowBg,
+        p.eyebrow,
+      ]}
+    >
+      <span class:list={['inline-block w-1.5 h-1.5 rounded-full', p.bullet]} aria-hidden="true"></span>
+      {group.data.tagline}
+    </span>
+    <h2 class:list={['heading-display text-4xl md:text-5xl', p.title]}>
       {group.data.name}
     </h2>
-    {group.data.tagline && (
-      <p class="mt-3 text-ink-600">{group.data.tagline}</p>
+    {group.data.pitch && (
+      <p class:list={['mt-4 text-lg md:text-xl font-medium', p.pillText]}>
+        {group.data.pitch}
+      </p>
+    )}
+    {group.data.forWhom && (
+      <p class="mt-3 text-sm text-ink-500">
+        <span class="font-semibold text-ink-700">适合：</span>{group.data.forWhom}
+      </p>
     )}
   </div>
 
-  <article class="prose-cn max-w-3xl mx-auto text-ink-700 leading-relaxed">
-    <Content />
-  </article>
+  <div
+    class:list={[
+      'grid gap-10 lg:gap-12 items-start',
+      hasImage ? 'lg:grid-cols-2' : 'max-w-3xl mx-auto',
+    ]}
+  >
+    {/* 图（左 / 右交替） */}
+    {hasImage && (
+      <div class:list={[reverse ? 'lg:order-2' : 'lg:order-1']}>
+        <div class="relative group">
+          <div
+            class:list={[
+              'absolute -inset-3 rounded-3xl opacity-40 blur-2xl transition-opacity group-hover:opacity-60',
+              p.eyebrowBg,
+            ]}
+            aria-hidden="true"
+          ></div>
+          <img
+            src={group.data.heroImage}
+            alt={`${group.data.name} 配图`}
+            class="relative w-full h-auto rounded-2xl shadow-lg ring-1 ring-ink-100"
+            loading="lazy"
+            decoding="async"
+          />
+        </div>
+      </div>
+    )}
+
+    {/* 文 */}
+    <div class:list={[reverse ? 'lg:order-1' : 'lg:order-2']}>
+      {/* 你将收获 - 交互卡片 */}
+      {
+        group.data.gains && group.data.gains.length > 0 && (
+          <div class="mb-8">
+            <h3 class="text-lg font-bold text-ink-900 mb-4 flex items-center gap-2">
+              <span class:list={['inline-block w-1 h-5 rounded-sm', p.bullet]} aria-hidden="true"></span>
+              你将收获
+            </h3>
+            <ul class="space-y-3">
+              {group.data.gains.map((g) => (
+                <li>
+                  <Card class="hover-lift">
+                    <div class="p-4 flex gap-3">
+                      <span
+                        class:list={[
+                          'flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center text-white font-bold text-sm',
+                          p.cta,
+                        ]}
+                      >
+                        ✓
+                      </span>
+                      <div class="flex-1 min-w-0">
+                        <h4 class:list={['font-semibold text-base', p.title]}>{g.title}</h4>
+                        <p class="mt-1 text-sm text-ink-600 leading-relaxed">{g.detail}</p>
+                      </div>
+                    </div>
+                  </Card>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )
+      }
+
+      {/* 技术栈 / 标签云 */}
+      {
+        group.data.bullets && group.data.bullets.length > 0 && (
+          <div class="mb-8">
+            <h3 class="text-lg font-bold text-ink-900 mb-4 flex items-center gap-2">
+              <span class:list={['inline-block w-1 h-5 rounded-sm', p.bullet]} aria-hidden="true"></span>
+              你会接触到的
+            </h3>
+            <div class="flex flex-wrap gap-2">
+              {group.data.bullets.map((b) => (
+                <span
+                  class:list={[
+                    'inline-flex items-center text-xs font-medium px-3 py-1.5 rounded-full transition-transform hover:scale-105',
+                    p.pill,
+                  ]}
+                >
+                  {b}
+                </span>
+              ))}
+            </div>
+          </div>
+        )
+      }
+
+      {/* Markdown 正文 */}
+      <article class:list={['prose-cn max-w-none', p.body]}>
+        <Content />
+      </article>
+    </div>
+  </div>
 </Section>
