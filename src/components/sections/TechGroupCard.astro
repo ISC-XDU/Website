@@ -180,7 +180,7 @@ const p = palettes[accent as keyof typeof palettes];
       }
 
       {/* Markdown 正文 */}
-      <article class:list={['prose-cn max-w-none', p.body]}>
+      <article class:list={['prose prose-slate max-w-none prose-headings:font-display prose-headings:font-bold', p.body]}>
         <Content />
       </article>
     </div>

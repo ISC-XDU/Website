@@ -70,8 +70,65 @@
     @apply font-display font-bold tracking-tight;
   }
 
-  .prose-cn p {
+  /* 兼容旧引用：让 prose-cn 退化为 prose（避免显示问题） */
+  .prose-cn {
+    @apply prose prose-slate max-w-none;
+  }
+}
+
+@layer components {
+  /* 自定义 prose 元素的微调（覆盖 @tailwindcss/typography 默认值） */
+  .prose {
     @apply leading-relaxed;
+  }
+  .prose h2 {
+    @apply text-2xl md:text-3xl mt-10 mb-4 scroll-mt-20;
+  }
+  .prose h3 {
+    @apply text-xl md:text-2xl mt-8 mb-3 scroll-mt-20;
+  }
+  .prose p {
+    @apply my-4;
+  }
+  .prose ul {
+    @apply my-4 space-y-2 list-disc pl-6;
+  }
+  .prose ol {
+    @apply my-4 space-y-2 list-decimal pl-6;
+  }
+  .prose li {
+    @apply leading-relaxed;
+  }
+  .prose strong {
+    @apply font-semibold text-ink-900;
+  }
+  .prose a {
+    @apply text-inspur-600 hover:underline;
+  }
+  .prose blockquote {
+    @apply border-l-4 border-inspur-300 pl-4 italic text-ink-600 my-4;
+  }
+  /* 路径图风格的代码块：浅灰底、等宽字体、保留换行 */
+  .prose pre {
+    @apply bg-ink-50 text-ink-700 rounded-lg p-4 my-4 text-sm leading-relaxed overflow-x-auto whitespace-pre;
+  }
+  .prose code {
+    @apply font-mono text-[0.9em];
+  }
+  .prose pre code {
+    @apply bg-transparent p-0 text-ink-800;
+  }
+  .prose hr {
+    @apply my-8 border-ink-200;
+  }
+  .prose table {
+    @apply w-full my-4 text-sm border-collapse;
+  }
+  .prose th {
+    @apply bg-ink-50 px-3 py-2 text-left font-semibold border border-ink-200;
+  }
+  .prose td {
+    @apply px-3 py-2 border border-ink-200;
   }
 }
 
