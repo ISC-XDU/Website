@@ -32,7 +32,7 @@ const { posters, initialIndex = 0 } = Astro.props;
     posters.map((p, i) => (
       <button
         type="button"
-        class="poster absolute top-0 left-0 right-0 mx-auto w-[180px] sm:w-[200px] md:w-[220px] aspect-[9/16] rounded-2xl overflow-hidden shadow-xl ring-1 ring-black/5 dark:ring-white/10 bg-white dark:bg-ink-900 cursor-grab active:cursor-grabbing focus:outline-none focus-visible:ring-2 focus-visible:ring-inspur-500 will-change-transform"
+        class="poster absolute top-1/2 left-1/2 w-[180px] sm:w-[200px] md:w-[220px] aspect-[9/16] rounded-2xl overflow-hidden shadow-xl ring-1 ring-black/5 dark:ring-white/10 bg-white dark:bg-ink-900 cursor-grab active:cursor-grabbing focus:outline-none focus-visible:ring-2 focus-visible:ring-inspur-500 will-change-transform"
         data-poster
         data-poster-index={i}
         aria-label={`海报 ${i + 1} / ${posters.length}：${p.alt}`}
@@ -137,7 +137,10 @@ const { posters, initialIndex = 0 } = Astro.props;
     let mode: Mode = 'stacked';
     let topIndex = parseInt(root.dataset.initialIndex ?? '0', 10) || 0;
 
-    // 初始布局
+    // 初始布局：先让每张牌按自身中心对齐父级 50% 50%（用 xPercent/yPercent）
+    posters.forEach((p) => {
+      gsap.set(p, { xPercent: -50, yPercent: -50 });
+    });
     layoutStack(true);
     updateIndicator();
     showHint('stacked', 4000);
