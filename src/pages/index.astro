@@ -1,15 +1,33 @@
 ---
 import PageLayout from '@layouts/PageLayout.astro';
 import HomeHero from '@components/sections/HomeHero.astro';
+import StatsBar from '@components/ui/StatsBar.astro';
+import IntroduceOverview from '@components/sections/IntroduceOverview.astro';
 import HomeShowcase from '@components/sections/HomeShowcase.astro';
+import HomeRecruitment2026 from '@components/sections/HomeRecruitment2026.astro';
 import HomeFAQ from '@components/sections/HomeFAQ.astro';
 ---
 
 <PageLayout
-  title="主页"
-  description="西电浪潮俱乐部（XDU ISC）官方网站，加入浪潮，成为一名浪潮er。"
+  title="西电浪潮俱乐部"
+  description="西电浪潮俱乐部（XDU ISC）成立于 2017 年，由浪潮集团与西安电子科技大学计算机学院共建的校企联合俱乐部。加入我们，成为一名浪潮er。"
+  enableReveal={true}
 >
+  {/* 1. Hero：mesh 渐变 + 浮动球 + 巨字标题 */}
   <HomeHero />
+
+  {/* 2. 俱乐部概览：文字 + 部门卡片（Bento）*/}
+  <IntroduceOverview />
+
+  {/* 3. 数据条：玻璃卡 + 数字 count-up */}
+  <StatsBar />
+
+  {/* 4. 我能收获什么：Bento 1+3 */}
   <HomeShowcase />
+
+  {/* 5. 2026 招新：5 张海报 + 4 个福利亮点 */}
+  <HomeRecruitment2026 />
+
+  {/* 6. 新人常见问题：手风琴 */}
   <HomeFAQ />
 </PageLayout>

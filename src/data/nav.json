@@ -1,6 +1,5 @@
 [
   { "label": "主页", "href": "/" },
-  { "label": "介绍", "href": "/introduce" },
   {
     "label": "团队",
     "href": "#",

@@ -4,75 +4,98 @@ import Card from '@components/ui/Card.astro';
 import siteData from '@data/site.json';
 ---
 
-<Section background="default" reveal>
-  <div class="text-center max-w-2xl mx-auto mb-10">
-    <h2 class="heading-display text-3xl md:text-4xl text-ink-900">俱乐部概览</h2>
-  </div>
+<Section background="default" containerClass="!py-20 md:!py-28">
+  <div class="grid lg:grid-cols-5 gap-8 lg:gap-12 items-start">
+    {/* 左 2 列：俱乐部概览文字 */}
+    <div class="lg:col-span-2" data-reveal data-reveal-delay="0">
+      <span
+        class="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wider rounded-full px-3 py-1 mb-3
+               glass text-xidian-500"
+      >
+        <span class="inline-block w-1.5 h-1.5 rounded-full bg-xidian-500" aria-hidden="true"></span>
+        About Us
+      </span>
+      <h2 class="heading-display text-3xl md:text-4xl text-ink-900 dark:text-ink-50 mt-3" data-split-title>
+        俱乐部
+        <span class="text-gradient-xidian bg-clip-text text-transparent">概览</span>
+      </h2>
 
-  <div class="prose-cn max-w-3xl mx-auto text-ink-700 leading-relaxed space-y-4">
-    <p>
-      西电浪潮俱乐部（Inspur Student Club，简称
-      <strong class="text-ink-900">ISC</strong>）成立于 {siteData.founded} 年，我们以企业资源为依托，为同学们打造一个
-      <strong class="text-ink-900">提升就业技能</strong> 以及
-      <strong class="text-ink-900">增加知识储备</strong> 的平台。
-    </p>
-    <p>
-      通过技术培训、学术讲座、浪潮集团参观访问、技术茶话会等活动，俱乐部已为往届同学提供了一个高水平的机器学习、数据挖掘、算法竞赛平台；并给予包括但不限于
-      <strong class="text-ink-900">实习、就业、升学</strong> 等方面的指导和帮助。
-    </p>
-    <p>
-      目前，浪潮俱乐部构成主要分为 <strong class="text-inspur-600">技术部</strong> 和
-      <strong class="text-xidian-500">运营部</strong> 两大模块。
-    </p>
-  </div>
+      <div class="prose prose-lg max-w-none mt-6 text-ink-700 dark:text-ink-300">
+        <p>
+          西电浪潮俱乐部（<strong class="text-ink-900 dark:text-ink-50">ISC</strong>）成立于
+          {siteData.founded} 年，以企业资源为依托，为同学们打造一个
+          <strong class="text-ink-900 dark:text-ink-50">提升就业技能</strong>
+          与
+          <strong class="text-ink-900 dark:text-ink-50">增加知识储备</strong> 的平台。
+        </p>
+        <p>
+          通过技术培训、学术讲座、浪潮集团参观访问、技术茶话会等活动，俱乐部已为往届同学提供高水平的
+          <strong>机器学习 / 数据挖掘 / 算法竞赛</strong> 平台；并给予包括但不限于
+          <strong class="text-ink-900 dark:text-ink-50">实习、就业、升学</strong>
+          等方面的指导和帮助。
+        </p>
+        <p>
+          目前主要由 <strong class="text-inspur-600 dark:text-cyan-300">技术部</strong>
+          和 <strong class="text-xidian-500 dark:text-orange-300">运营部</strong>
+          两大模块组成。
+        </p>
+      </div>
+    </div>
 
-  <div class="grid md:grid-cols-2 gap-6 mt-10 max-w-4xl mx-auto">
-    <Card class="h-full" interactive>
-      <div class="p-6 flex gap-4">
-        <img
-          src="/img/inbetweening/3.png"
-          alt=""
-          class="w-24 h-24 object-contain flex-shrink-0 hidden md:block"
-          loading="lazy"
-        />
-        <div>
-          <h3 class="text-xl font-semibold text-ink-900 mb-2">技术部</h3>
-          <p class="text-sm text-ink-600">
-            我们针对各个组别主要进行相关技术的学习运用，帮助每个同学创造更多可能。
+    {/* 右 3 列：部门 Bento 卡片 */}
+    <div class="lg:col-span-3 grid sm:grid-cols-2 gap-5" data-reveal data-reveal-delay="0.1">
+      {/* 技术部：大卡 */}
+      <Card class="group glass glass-hover md:col-span-2 !rounded-3xl relative overflow-hidden">
+        <div class="absolute -top-12 -right-12 w-40 h-40 rounded-full bg-gradient-to-br from-inspur-500 to-cyan-500 opacity-15 blur-2xl" aria-hidden="true"></div>
+        <div class="relative p-6 md:p-8">
+          <div class="flex items-center gap-3 mb-3">
+            <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-inspur-500 to-cyan-500 flex items-center justify-center text-white text-2xl shadow-lg">
+              <span aria-hidden="true">⚡</span>
+            </div>
+            <h3 class="heading-display text-2xl text-ink-900 dark:text-ink-50">技术部</h3>
+          </div>
+          <p class="text-ink-600 dark:text-ink-300 leading-relaxed">
+            我们针对各个组别进行相关技术的学习运用，帮助每个同学创造更多可能。
           </p>
-          <p class="text-sm text-ink-500 mt-1">现有 ACM 组、AI 组、WEB 组、系统组</p>
+          <div class="mt-4 flex flex-wrap gap-2">
+            {
+              ['Web 组', 'AI 组', 'Agent 组', 'ACM 组'].map((g) => (
+                <span class="text-xs font-semibold px-3 py-1 rounded-full bg-inspur-50 text-inspur-700 dark:bg-inspur-900/40 dark:text-cyan-300">
+                  {g}
+                </span>
+              ))
+            }
+          </div>
           <a
             href="/tech"
-            class="inline-block mt-3 text-sm text-white bg-ink-800 hover:bg-ink-900 px-4 py-1.5 rounded-md transition-colors"
+            class="inline-flex items-center gap-1 mt-5 text-sm font-semibold text-inspur-600 dark:text-cyan-300 hover:gap-2 transition-all"
           >
-            查看更多 →
+            查看更多
+            <svg class="w-4 h-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clip-rule="evenodd"/></svg>
           </a>
         </div>
-      </div>
-    </Card>
+      </Card>
 
-    <Card class="h-full" interactive>
-      <div class="p-6 flex gap-4">
-        <img
-          src="/img/inbetweening/1.png"
-          alt=""
-          class="w-24 h-24 object-contain flex-shrink-0 hidden md:block"
-          loading="lazy"
-        />
-        <div>
-          <h3 class="text-xl font-semibold text-ink-900 mb-2">运营部</h3>
-          <p class="text-sm text-ink-600">
-            我们是浪潮的打理人、护航者，致力于挖掘成员潜力，让所有人各尽其才。
+      {/* 运营部：小卡 */}
+      <Card class="group glass glass-hover md:col-span-1 !rounded-3xl relative overflow-hidden">
+        <div class="absolute -top-10 -right-10 w-32 h-32 rounded-full bg-gradient-to-br from-xidian-500 to-orange-500 opacity-15 blur-2xl" aria-hidden="true"></div>
+        <div class="relative p-6">
+          <div class="w-11 h-11 rounded-2xl bg-gradient-to-br from-xidian-500 to-orange-500 flex items-center justify-center text-white text-xl shadow-lg mb-3">
+            <span aria-hidden="true">📢</span>
+          </div>
+          <h3 class="heading-display text-xl text-ink-900 dark:text-ink-50">运营部</h3>
+          <p class="mt-2 text-sm text-ink-600 dark:text-ink-300 leading-relaxed">
+            打理人、护航者。挖掘成员潜力，让所有人各尽其才。
           </p>
-          <p class="text-sm text-ink-500 mt-1">活动 / 宣传 / 运营 三块工作</p>
           <a
             href="/operate"
-            class="inline-block mt-3 text-sm text-white bg-inspur-600 hover:bg-inspur-700 px-4 py-1.5 rounded-md transition-colors"
+            class="inline-flex items-center gap-1 mt-4 text-sm font-semibold text-xidian-500 dark:text-orange-300 hover:gap-2 transition-all"
           >
-            了解更多 →
+            了解更多
+            <svg class="w-4 h-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clip-rule="evenodd"/></svg>
           </a>
         </div>
-      </div>
-    </Card>
+      </Card>
+    </div>
   </div>
 </Section>

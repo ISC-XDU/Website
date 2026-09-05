@@ -1,0 +1,121 @@
+---
+import Section from '@components/ui/Section.astro';
+
+// 5 张招新海报（public/img/recruitment/2026/）
+const posters = [
+  { src: '/img/recruitment/2026/p1.png', alt: '浪潮俱乐部招新啦 - 主海报' },
+  { src: '/img/recruitment/2026/p2.png', alt: '部门简表：WEB/AI/Agent/ACM/运营' },
+  { src: '/img/recruitment/2026/p3.png', alt: 'Agent 组 + ACM 组 + 运营部 介绍' },
+  { src: '/img/recruitment/2026/p4.png', alt: 'Web 组 + AI 组 介绍' },
+  { src: '/img/recruitment/2026/p5.png', alt: '社团福利：mentor / 内推 / 节日活动 / 职业规划' },
+];
+
+// 4 个社团福利亮点（取自 p5 海报）
+const benefits = [
+  {
+    icon: '🎓',
+    title: 'mentor 制度',
+    detail: '加入技术部后，1v1 带领学习，按你的节奏和方向上手。',
+  },
+  {
+    icon: '🚀',
+    title: '内推名额',
+    detail: '实习生内推、校招绿色通道，优秀者成为浪潮员工；提前了解校招、参与项目。',
+  },
+  {
+    icon: '🎂',
+    title: '节日活动',
+    detail: '一年一次的生日会、节日礼品，结识五湖四海的朋友。',
+  },
+  {
+    icon: '💼',
+    title: '职业规划',
+    detail: '专业 HR 职业规划指导、企业招聘面试培训，从校园到职场不掉链子。',
+  },
+];
+---
+
+<Section background="default" containerClass="!py-20 md:!py-28" id="recruitment-2026" class="scroll-mt-20">
+  <div class="text-center max-w-3xl mx-auto mb-12" data-reveal data-reveal-delay="0">
+    <span
+      class="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wider rounded-full px-3 py-1 mb-3
+             glass text-emerald-600 dark:text-emerald-300"
+    >
+      <span class="inline-block w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" aria-hidden="true"></span>
+      2026 春季招新
+    </span>
+    <h2 class="heading-display text-3xl md:text-5xl text-ink-900 dark:text-ink-50 mt-3" data-split-title>
+      浪潮俱乐部
+      <span class="text-gradient-rainbow bg-clip-text text-transparent">招新啦</span>
+    </h2>
+    <p class="mt-4 text-ink-600 dark:text-ink-300 text-lg">
+      五个方向，全面成长 —— 扫码或联系负责人加入
+    </p>
+  </div>
+
+  {/* 5 张招新海报：桌面 3+2 网格 + 移动端横滚 */}
+  <div class="relative -mx-4 px-4 md:mx-0 md:px-0">
+    {/* 移动 / 平板：水平滚动条 */}
+    <div
+      class="flex md:hidden gap-4 overflow-x-auto snap-x snap-mandatory pb-4 scrollbar-thin"
+      data-reveal
+      data-reveal-delay="0.1"
+    >
+      {
+        posters.map((p) => (
+          <div class="snap-center shrink-0 w-[78vw] max-w-[320px]">
+            <img
+              src={p.src}
+              alt={p.alt}
+              loading="lazy"
+              decoding="async"
+              class="w-full h-auto rounded-2xl shadow-lg ring-1 ring-ink-200/50 dark:ring-white/10"
+            />
+          </div>
+        ))
+      }
+    </div>
+
+    {/* 桌面：3 + 2 网格布局 */}
+    <div class="hidden md:grid grid-cols-3 gap-5 md:gap-6" data-reveal data-reveal-delay="0.1">
+      {
+        posters.slice(0, 3).map((p) => (
+          <div class="overflow-hidden rounded-2xl shadow-md ring-1 ring-ink-200/50 dark:ring-white/10 hover:shadow-xl transition-shadow">
+            <img src={p.src} alt={p.alt} loading="lazy" decoding="async" class="w-full h-auto" />
+          </div>
+        ))
+      }
+    </div>
+    <div class="hidden md:grid md:grid-cols-2 gap-5 md:gap-6 mt-5 md:mt-6 max-w-2xl mx-auto" data-reveal data-reveal-delay="0.2">
+      {
+        posters.slice(3).map((p) => (
+          <div class="overflow-hidden rounded-2xl shadow-md ring-1 ring-ink-200/50 dark:ring-white/10 hover:shadow-xl transition-shadow">
+            <img src={p.src} alt={p.alt} loading="lazy" decoding="async" class="w-full h-auto" />
+          </div>
+        ))
+      }
+    </div>
+  </div>
+
+  {/* 4 个社团福利亮点 */}
+  <div class="mt-14 md:mt-20">
+    <h3 class="text-center heading-display text-xl md:text-2xl text-ink-800 dark:text-ink-100 mb-6" data-reveal data-reveal-delay="0">
+      加入浪潮，你能获得
+    </h3>
+    <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5" data-reveal data-reveal-delay="0.1">
+      {
+        benefits.map((b) => (
+          <div class="glass glass-hover rounded-2xl p-5 md:p-6 group">
+            <div class="text-3xl mb-2" aria-hidden="true">{b.icon}</div>
+            <h4 class="text-base font-semibold text-ink-900 dark:text-ink-50">
+              {b.title}
+            </h4>
+            <p class="mt-1.5 text-sm text-ink-600 dark:text-ink-300 leading-relaxed">
+              {b.detail}
+            </p>
+          </div>
+        ))
+      }
+    </div>
+  </div>
+</Section>

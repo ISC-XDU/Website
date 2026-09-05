@@ -142,10 +142,6 @@
       transition-duration: 0.01ms !important;
       scroll-behavior: auto !important;
     }
-    .reveal {
-      opacity: 1 !important;
-      transform: none !important;
-    }
   }
 }
 
@@ -240,32 +236,6 @@
 }
 
 @layer utilities {
-  /* wpkoi 风格：滚动进入视口的淡入上浮动画 */
-  .reveal {
-    opacity: 0;
-    transform: translateY(24px);
-    transition: opacity 0.7s var(--ease-out-quart), transform 0.7s var(--ease-out-quart);
-    will-change: opacity, transform;
-  }
-  .reveal.is-revealed {
-    opacity: 1;
-    transform: translateY(0);
-  }
-
-  /* 轻微延迟变体（wpkoi 风格的级联进入） */
-  .reveal-delay-1 {
-    transition-delay: 0.08s;
-  }
-  .reveal-delay-2 {
-    transition-delay: 0.16s;
-  }
-  .reveal-delay-3 {
-    transition-delay: 0.24s;
-  }
-  .reveal-delay-4 {
-    transition-delay: 0.32s;
-  }
-
   /* 卡片悬浮上浮（wpkoi 风格） */
   .hover-lift {
     transition: transform 0.4s var(--ease-out-quart), box-shadow 0.4s var(--ease-out-quart);
@@ -286,5 +256,142 @@
   /* 视差背景（轻度） */
   .bg-attach-fixed {
     background-attachment: fixed;
+  }
+}
+
+/* ==================== 现代设计系统 ==================== */
+
+/* 渐变 mesh 背景：多个 radial-gradient 叠加 */
+@layer utilities {
+  .bg-mesh-light {
+    background-color: #f8fafc;
+    background-image:
+      radial-gradient(at 20% 20%, rgba(47, 109, 255, 0.18) 0px, transparent 50%),
+      radial-gradient(at 80% 10%, rgba(168, 85, 247, 0.14) 0px, transparent 50%),
+      radial-gradient(at 70% 80%, rgba(236, 72, 153, 0.10) 0px, transparent 50%),
+      radial-gradient(at 10% 90%, rgba(34, 211, 238, 0.12) 0px, transparent 50%);
+  }
+  [data-theme='dark'] .bg-mesh-light {
+    background-color: #0a0a0f;
+    background-image:
+      radial-gradient(at 20% 20%, rgba(47, 109, 255, 0.22) 0px, transparent 50%),
+      radial-gradient(at 80% 10%, rgba(168, 85, 247, 0.20) 0px, transparent 50%),
+      radial-gradient(at 70% 80%, rgba(236, 72, 153, 0.12) 0px, transparent 50%),
+      radial-gradient(at 10% 90%, rgba(34, 211, 238, 0.16) 0px, transparent 50%);
+  }
+
+  .bg-mesh-accent {
+    background-color: #ffffff;
+    background-image:
+      radial-gradient(at 30% 30%, rgba(47, 109, 255, 0.10) 0px, transparent 50%),
+      radial-gradient(at 80% 70%, rgba(239, 68, 68, 0.08) 0px, transparent 50%);
+  }
+  [data-theme='dark'] .bg-mesh-accent {
+    background-color: #0d0d12;
+    background-image:
+      radial-gradient(at 30% 30%, rgba(47, 109, 255, 0.16) 0px, transparent 50%),
+      radial-gradient(at 80% 70%, rgba(239, 68, 68, 0.10) 0px, transparent 50%);
+  }
+}
+
+/* 玻璃拟态 */
+@layer utilities {
+  .glass {
+    background: rgba(255, 255, 255, 0.55);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    box-shadow: 0 8px 32px 0 rgba(15, 23, 42, 0.08);
+  }
+  [data-theme='dark'] .glass {
+    background: rgba(20, 20, 30, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+  }
+
+  .glass-subtle {
+    background: rgba(255, 255, 255, 0.35);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+  }
+  [data-theme='dark'] .glass-subtle {
+    background: rgba(20, 20, 30, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+  }
+}
+
+/* 浮动动画（装饰性球体） */
+@keyframes float-slow {
+  0%, 100% { transform: translate(0, 0) rotate(0deg); }
+  33% { transform: translate(20px, -25px) rotate(120deg); }
+  66% { transform: translate(-15px, 15px) rotate(240deg); }
+}
+@keyframes float-medium {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(-30px, -20px) scale(1.1); }
+}
+@keyframes float-fast {
+  0%, 100% { transform: translate(0, 0); }
+  25% { transform: translate(15px, -15px); }
+  50% { transform: translate(-10px, -25px); }
+  75% { transform: translate(-20px, 5px); }
+}
+@keyframes pulse-glow {
+  0%, 100% { opacity: 0.6; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.05); }
+}
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@layer utilities {
+  .float-slow { animation: float-slow 18s ease-in-out infinite; }
+  .float-medium { animation: float-medium 12s ease-in-out infinite; }
+  .float-fast { animation: float-fast 8s ease-in-out infinite; }
+  .pulse-glow { animation: pulse-glow 4s ease-in-out infinite; }
+  .animate-shimmer {
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+    background-size: 200% 100%;
+    animation: shimmer 2.5s linear infinite;
+  }
+}
+
+/* 玻璃卡 hover 增强 */
+@layer utilities {
+  .glass-hover {
+    transition: transform 0.5s var(--ease-out-quart), box-shadow 0.5s var(--ease-out-quart), border-color 0.5s;
+  }
+  .glass-hover:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 24px 48px -12px rgba(15, 23, 42, 0.15);
+  }
+  [data-theme='dark'] .glass-hover:hover {
+    box-shadow: 0 24px 48px -12px rgba(0, 0, 0, 0.6);
+  }
+}
+
+/* 文字渐变变体 */
+@layer utilities {
+  .text-gradient-rainbow {
+    background: linear-gradient(135deg, #2f6dff 0%, #a855f7 50%, #ec4899 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .text-gradient-xidian {
+    background: linear-gradient(135deg, #ef4444 0%, #f97316 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+}
+
+/* 在大屏上启用 backdrop-blur（低端机 fallback） */
+@media (max-width: 767px) {
+  .glass, .glass-subtle {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
   }
 }
