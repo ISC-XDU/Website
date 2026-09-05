@@ -32,3 +32,19 @@ export function getYears(): number[] {
 export function getCount(): number {
   return members.length;
 }
+
+/**
+ * 从 bio 中提取主要身份（如"主席"、"技术部部长"、"秘书长"）。
+ * bio 以"西电浪潮俱乐部XXXX-XXXX届XX"开头，兼容多届连任无身份的写法
+ * （如"2017-2018届、2018-2019届主席"）。提取失败返回 null（不显示徽章）。
+ */
+export function getRole(m: Member): string | null {
+  if (!m.bio) return null;
+  const match = m.bio.match(
+    /西电浪潮俱乐部(?:\d{4}-?\d{4}届[、，])*\d{4}-?\d{4}届([^，。、\s]+?)(?:[，。、]|$)/
+  );
+  if (!match) return null;
+  const role = match[1].trim();
+  if (!role || role.length > 12) return null;
+  return role;
+}

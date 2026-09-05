@@ -14,25 +14,60 @@ const total = getCount();
   description="西电浪潮俱乐部历届成员墙，共收录 {total} 位同学。"
 >
   <Section background="default" containerClass="!py-10" reveal>
-    <div class="text-center max-w-3xl mx-auto mb-10">
-      <h1 class="heading-display text-4xl md:text-5xl text-ink-900 inline-block px-6 py-2 border-4 border-xidian-200 rounded-full">
+    <div class="text-center max-w-3xl mx-auto mb-8">
+      <h1 class="heading-display text-4xl md:text-5xl text-ink-900 inline-block px-8 py-3 rounded-full border-4 border-xidian-200 bg-white/50 dark:bg-ink-900/50">
         成员墙
       </h1>
       <p class="mt-4 text-ink-600 leading-relaxed">
         作为西电高质量俱乐部，浪潮汇聚了大批具有真才实学的有志 XDer，成就浪潮的同时，造就自己的才华和理想。
       </p>
       <p class="mt-2 text-ink-900 font-semibold tracking-wider">卓越 · 追求 · 奋进 · 坚实</p>
-      <p class="mt-4 text-sm text-ink-500">共收录 {total} 位成员</p>
+
+      {/* 统计条：届数 / 成员数 */}
+      <div class="mt-5 flex items-center justify-center gap-3" data-reveal data-reveal-delay="0">
+        <span class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass text-sm text-ink-700 dark:text-ink-200">
+          <span class="inline-block w-2 h-2 rounded-full bg-inspur-500" aria-hidden="true"></span>
+          {years.length} 届
+        </span>
+        <span class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass text-sm text-ink-700 dark:text-ink-200">
+          <span class="inline-block w-2 h-2 rounded-full bg-cyan-500" aria-hidden="true"></span>
+          共 {total} 位成员
+        </span>
+      </div>
     </div>
+
+    {/* 届别锚点导航：点击平滑滚动到对应届 */}
+    <nav
+      class="sticky top-16 z-30 -mx-4 px-4 py-3 mb-10 backdrop-blur-md bg-white/70 dark:bg-ink-900/70 border-b border-ink-100 dark:border-ink-800"
+      aria-label="届别跳转"
+    >
+      <div class="flex gap-2 overflow-x-auto pb-1 justify-start md:justify-center">
+        {
+          years.map((year) => (
+            <a
+              href={`#year-${year}`}
+              class="shrink-0 px-3.5 py-1.5 rounded-full text-sm font-medium text-ink-600 dark:text-ink-300
+                     border border-ink-200 dark:border-ink-700 hover:text-white hover:border-inspur-500
+                     hover:bg-inspur-500 transition-colors whitespace-nowrap"
+            >
+              {year}届
+            </a>
+          ))
+        }
+      </div>
+    </nav>
 
     {
       years.map((year) => (
-        <div class="mb-12 last:mb-0">
+        <div id={`year-${year}`} class="mb-14 last:mb-0 scroll-mt-32">
           <div class="text-center mb-6">
-            <h2 class="heading-display text-2xl md:text-3xl text-ink-900">
-              <span class="text-xidian-500">★</span> {year}—{year + 1} 届 <span class="text-xidian-500">★</span>
-            </h2>
-            <p class="mt-1 text-sm text-ink-500">{grouped[year]?.length ?? 0} 人</p>
+            <h2 class="heading-display text-2xl md:text-3xl text-ink-900">{year}—{year + 1} 届</h2>
+            {/* 品牌渐变下划线 */}
+            <div class="mx-auto mt-3 h-1 w-24 rounded-full bg-gradient-to-r from-inspur-400 via-cyan-400 to-xidian-400" aria-hidden="true"></div>
+            <p class="mt-3 inline-flex items-center gap-1.5 text-sm text-ink-500">
+              <span class="inline-block w-1.5 h-1.5 rounded-full bg-cyan-500/80" aria-hidden="true"></span>
+              {grouped[year]?.length ?? 0} 人
+            </p>
           </div>
           <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
             {(grouped[year] ?? []).map((m) => (
