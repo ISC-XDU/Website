@@ -1,6 +1,5 @@
 ---
 import Section from '@components/ui/Section.astro';
-import Card from '@components/ui/Card.astro';
 
 const items = [
   {
@@ -9,59 +8,125 @@ const items = [
     summary: '如果你对编程感兴趣，那浪潮一定不会让你失望。',
     body: '这里聚集了西电各路编程达人，从网站开发到机器学习，亦或是网络攻防、算法竞赛，无论你对哪方面感兴趣，你都可以在浪潮俱乐部学到想学的知识，极大地提升编程能力。',
     accent: 'inspur',
+    featured: true,
   },
   {
     title: '运营能力',
     icon: '/img/icon/operation.png',
     summary: '如果你对宣传、管理类工作青睐，这里同样适合你。',
-    body: '浪潮同样需要负责运营、宣传的同学来维护俱乐部的正常运作，活动安排、宣传工作、资金流转等等事宜，会给你管理与运营能力上极大的锻炼与提升。',
-    accent: 'ink',
+    body: '浪潮同样需要负责运营、宣传的同学来维护俱乐部的正常运作。',
+    accent: 'pink',
+    featured: false,
   },
   {
     title: '团队意识',
     icon: '/img/icon/cooperation.png',
     summary: '在浪潮，你不是一个人孤军奋战。',
-    body: '不论你加入哪个部门、技术组，你都将和队友、学长学姐一同学习，在交流中进步，在互助中成长。技术的交锋碰撞火花，思想的汇聚凝练智慧。',
-    accent: 'ink',
+    body: '不论你加入哪个部门、技术组，你都将和队友、学长学姐一同学习，在交流中进步。',
+    accent: 'violet',
+    featured: false,
   },
   {
     title: '学习能力',
     icon: '/img/icon/study.png',
     summary: '是的，浪潮人不仅技术强，学业上更是锋芒乍现。',
-    body: '这里有推免清北的前辈，不乏保研名校的强者，更有均分名列前茅的学长学姐。浪潮前后辈关系都非常融洽，倾囊相授之下相信定能收获不少。',
-    accent: 'inspur',
+    body: '这里有推免清北的前辈，不乏保研名校的强者，更有均分名列前茅的学长学姐。',
+    accent: 'emerald',
+    featured: false,
   },
 ];
+
+const accentMap: Record<string, string> = {
+  inspur: 'from-inspur-500 to-cyan-500',
+  pink: 'from-pink-500 to-rose-500',
+  violet: 'from-violet-500 to-purple-500',
+  emerald: 'from-emerald-500 to-teal-500',
+};
 ---
 
-<Section background="default" reveal>
-  <div class="text-center max-w-2xl mx-auto mb-10">
-    <h2 class="heading-display text-3xl md:text-4xl text-ink-900">
-      我能在浪潮收获什么？
+<Section background="default" containerClass="!py-20 md:!py-28">
+  <div class="text-center max-w-3xl mx-auto mb-14 reveal">
+    <span
+      class="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wider rounded-full px-3 py-1 mb-3
+             glass text-inspur-600 dark:text-inspur-300"
+    >
+      <span class="inline-block w-1.5 h-1.5 rounded-full bg-inspur-500" aria-hidden="true"></span>
+      Why Join
+    </span>
+    <h2 class="heading-display text-3xl md:text-5xl text-ink-900 dark:text-ink-50 mt-3">
+      我能在浪潮
+      <span class="text-gradient-rainbow bg-clip-text text-transparent">收获什么</span>？
     </h2>
-    <p class="mt-3 text-ink-600">技术、运营、团队、学习，四大方向全面成长</p>
+    <p class="mt-4 text-ink-600 dark:text-ink-300 text-lg">
+      技术、运营、团队、学习 —— 四个方向，全面成长
+    </p>
   </div>
 
-  <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
+  {/* Bento 网格：1 大（编码技术）+ 3 小（运营/团队/学习） */}
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-5 md:gap-6 reveal">
+    {/* 大卡（占 2 列宽） */}
     {
-      items.map((item) => (
-        <Card class="h-full" interactive>
+      items.filter((i) => i.featured).map((item) => (
+        <div class="md:col-span-2 md:row-span-1 group glass glass-hover rounded-3xl p-8 md:p-10 relative overflow-hidden">
           <div
-            class:list={[
-              'p-6 text-white h-full flex flex-col',
-              item.accent === 'inspur' ? 'bg-inspur-600' : 'bg-ink-800',
-            ]}
-          >
-            <div class="flex items-center gap-3 mb-3">
-              <img src={item.icon} alt="" class="w-12 h-12" loading="lazy" />
-              <h3 class="text-xl font-semibold">{item.title}</h3>
+            class:list={['absolute -top-20 -right-20 w-64 h-64 rounded-full bg-gradient-to-br opacity-15 blur-3xl', accentMap[item.accent]]}
+            aria-hidden="true"
+          />
+          <div class="relative h-full flex flex-col">
+            <div class="flex items-center gap-4 mb-4">
+              <div
+                class:list={['w-14 h-14 md:w-16 md:h-16 rounded-2xl bg-gradient-to-br flex items-center justify-center text-3xl shadow-lg', accentMap[item.accent]]}
+              >
+                <img src={item.icon} alt="" class="w-7 h-7 md:w-8 md:h-8 brightness-0 invert" />
+              </div>
+              <div>
+                <h3 class="heading-display text-2xl md:text-3xl text-ink-900 dark:text-ink-50">
+                  {item.title}
+                </h3>
+                <span
+                  class:list={['inline-block text-xs font-semibold mt-1 bg-gradient-to-r bg-clip-text text-transparent', accentMap[item.accent]]}
+                >
+                  {item.summary}
+                </span>
+              </div>
             </div>
-            <p class="text-sm text-white/90 font-medium">{item.summary}</p>
-            <p class="mt-3 text-sm text-white/80 leading-relaxed flex-1">
+            <p class="text-ink-600 dark:text-ink-300 leading-relaxed text-base md:text-lg flex-1">
+              {item.body}
+            </p>
+            <div class="mt-6 flex items-center gap-2 text-sm text-ink-500 dark:text-ink-400">
+              <span>深入技术组</span>
+              <svg class="w-4 h-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clip-rule="evenodd"/></svg>
+            </div>
+          </div>
+        </div>
+      ))
+    }
+
+    {/* 3 张小卡 */}
+    {
+      items.filter((i) => !i.featured).map((item) => (
+        <div class="group glass glass-hover rounded-3xl p-6 md:p-8 relative overflow-hidden">
+          <div
+            class:list={['absolute -top-10 -right-10 w-40 h-40 rounded-full bg-gradient-to-br opacity-15 blur-2xl', accentMap[item.accent]]}
+            aria-hidden="true"
+          />
+          <div class="relative h-full flex flex-col">
+            <div
+              class:list={['w-12 h-12 md:w-14 md:h-14 rounded-2xl bg-gradient-to-br flex items-center justify-center text-2xl shadow-md mb-4', accentMap[item.accent]]}
+            >
+              <img src={item.icon} alt="" class="w-6 h-6 md:h-7 brightness-0 invert" />
+            </div>
+            <h3 class="heading-display text-xl text-ink-900 dark:text-ink-50">
+              {item.title}
+            </h3>
+            <p class="mt-2 text-sm font-medium text-ink-700 dark:text-ink-300">
+              {item.summary}
+            </p>
+            <p class="mt-3 text-sm text-ink-500 dark:text-ink-400 leading-relaxed flex-1">
               {item.body}
             </p>
           </div>
-        </Card>
+        </div>
       ))
     }
   </div>
