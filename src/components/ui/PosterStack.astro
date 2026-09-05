@@ -23,7 +23,7 @@ const { posters, initialIndex = 0 } = Astro.props;
 ---
 
 <div
-  class="poster-stack relative w-full h-[420px] sm:h-[520px] md:h-[600px] flex items-center justify-center select-none touch-none"
+  class="poster-stack relative w-full h-[620px] sm:h-[680px] md:h-[740px] flex items-center justify-center select-none touch-none"
   data-poster-stack
   data-initial-index={String(Math.max(0, Math.min(initialIndex, posters.length - 1)))}
   role="region"
@@ -34,7 +34,7 @@ const { posters, initialIndex = 0 } = Astro.props;
     posters.map((p, i) => (
       <button
         type="button"
-        class="poster absolute inset-0 m-auto w-[180px] h-[320px] sm:w-[200px] sm:h-[356px] md:w-[220px] md:h-[392px] rounded-2xl overflow-hidden shadow-xl ring-1 ring-black/5 dark:ring-white/10 bg-white dark:bg-ink-900 cursor-grab active:cursor-grabbing focus:outline-none focus-visible:ring-2 focus-visible:ring-inspur-500"
+        class="poster absolute inset-0 m-auto w-[270px] h-[480px] sm:w-[300px] sm:h-[534px] md:w-[330px] md:h-[588px] rounded-2xl overflow-hidden shadow-xl ring-1 ring-black/5 dark:ring-white/10 bg-white dark:bg-ink-900 cursor-grab active:cursor-grabbing focus:outline-none focus-visible:ring-2 focus-visible:ring-inspur-500"
         data-poster
         data-poster-index={i}
         aria-label={`海报 ${i + 1} / ${posters.length}：${p.alt}`}
@@ -110,9 +110,9 @@ const { posters, initialIndex = 0 } = Astro.props;
 <script>
   // 纯 JS 状态管理 + CSS transition 实现，避免 GSAP ESM TDZ 陷阱
 
-  // 堆叠态配置
+  // 堆叠态配置（offsetY / gapPx 随卡片尺寸 ×1.5 同步放大，保持错位与间距比例）
   const STACK = {
-    offsetY: 14,
+    offsetY: 21,
     rotateBase: 2.5,
     rotateStep: 2,
     scaleStep: 0.04,
@@ -121,7 +121,7 @@ const { posters, initialIndex = 0 } = Astro.props;
 
   // 展开态配置
   const EXPAND = {
-    gapPx: 70,
+    gapPx: 105,
     focusScale: 1.18,
     side1Scale: 0.88,
     side2Scale: 0.7,
