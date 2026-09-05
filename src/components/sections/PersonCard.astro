@@ -111,21 +111,81 @@ const emailLink = member.email ? `mailto:${member.email}` : null;
     position: absolute;
     inset: 0;
     transform: rotateY(180deg);
+    transition: none; /* 背面自身不动画，动画统一由外层卡片驱动 */
   }
-  /* 翻转态：整个卡片旋转 180° 并轻微放大，浮在邻居之上 */
+  /* 翻转态：提升层级浮在邻居之上（transform 由 JS 内联控制） */
   [data-member-flip][data-flipped='true'] > * {
-    transform: rotateY(180deg) scale(1.06);
     z-index: 20;
   }
 </style>
 
 <script>
-  // 点击卡片翻转（正面 → 背面内联简介），再点收回
+  // 点击卡片翻转（正面 → 背面内联简介），再点收回。
+  // 3D 翻转会让文字走 GPU 纹理采样（灰度抗锯齿 + scale 插值）导致发糊，
+  // 因此在翻转动画结束后把卡片切回纯 2D 交换态（清掉 transform），
+  // 背面以矢量方式重新渲染，文字恢复锐利；收回时再瞬时切回 3D 构图播放反向动画。
   document.querySelectorAll<HTMLElement>('[data-member-flip]').forEach((card) => {
+    const CARD = card.querySelector<HTMLElement>(':scope > div');
+    const FRONT = CARD?.querySelector<HTMLElement>('.front');
+    const BACK = CARD?.querySelector<HTMLElement>('.back');
+    if (!CARD || !FRONT || !BACK) return;
+
+    const DUR = 520; // 与 CSS transition 时长对齐（0.5s + 余量）
+    let settleTimer = 0;
+    let cleanupTimer = 0;
+
+    // 翻转动画结束 → 2D 交换态：清 transform，背面直接渲染（文字锐利）
+    const settle = () => {
+      clearTimeout(settleTimer);
+      clearTimeout(cleanupTimer);
+      if (card.dataset.flipped !== 'true') return;
+      CARD.style.transition = 'none';
+      CARD.style.transform = 'none';
+      BACK.style.transform = 'none'; // 解除预翻转，背面直接盖在正面之上
+      FRONT.style.visibility = 'hidden';
+      void CARD.offsetHeight;
+      CARD.style.transition = '';
+    };
+
+    const flip = () => {
+      clearTimeout(cleanupTimer);
+      // 恢复 3D 构图起点：背面预翻转、正面可见、卡片归零
+      CARD.style.transition = 'none';
+      CARD.style.transform = '';
+      BACK.style.transform = '';
+      FRONT.style.visibility = '';
+      void CARD.offsetHeight;
+      CARD.style.transition = '';
+      card.dataset.flipped = 'true';
+      CARD.style.transform = 'rotateY(180deg) scale(1.06)'; // 播放翻转 + 放大
+      card.setAttribute('aria-expanded', 'true');
+      clearTimeout(settleTimer);
+      settleTimer = window.setTimeout(settle, DUR);
+    };
+
+    const unflip = () => {
+      clearTimeout(settleTimer);
+      // 瞬时回到 3D 构图（保持背面可见），再播放回正动画
+      CARD.style.transition = 'none';
+      CARD.style.transform = 'rotateY(180deg) scale(1.06)';
+      BACK.style.transform = 'rotateY(180deg)';
+      FRONT.style.visibility = '';
+      void CARD.offsetHeight;
+      CARD.style.transition = '';
+      card.dataset.flipped = 'false';
+      CARD.style.transform = ''; // 计算值 180° → 0°，触发回正过渡
+      card.setAttribute('aria-expanded', 'false');
+      // 回正结束后恢复背面预翻转的 CSS 初始态
+      clearTimeout(cleanupTimer);
+      cleanupTimer = window.setTimeout(() => {
+        BACK.style.transform = '';
+        CARD.style.transform = '';
+      }, DUR);
+    };
+
     const toggle = () => {
-      const flipped = card.dataset.flipped === 'true';
-      card.dataset.flipped = String(!flipped);
-      card.setAttribute('aria-expanded', String(!flipped));
+      if (card.dataset.flipped === 'true') unflip();
+      else flip();
     };
 
     card.addEventListener('click', (e) => {
@@ -148,8 +208,7 @@ const emailLink = member.email ? `mailto:${member.email}` : null;
   window.addEventListener('keydown', (e) => {
     if (e.key !== 'Escape') return;
     document.querySelectorAll<HTMLElement>('[data-member-flip][data-flipped="true"]').forEach((card) => {
-      card.dataset.flipped = 'false';
-      card.setAttribute('aria-expanded', 'false');
+      card.dispatchEvent(new Event('click'));
     });
   });
 </script>
