@@ -1,5 +1,6 @@
 ---
 import Section from '@components/ui/Section.astro';
+import PosterStack from '@components/ui/PosterStack.astro';
 
 // 5 张招新海报（public/img/recruitment/2026/）
 const posters = [
@@ -53,48 +54,9 @@ const benefits = [
     </p>
   </div>
 
-  {/* 5 张招新海报：桌面 3+2 网格 + 移动端横滚 */}
-  <div class="relative -mx-4 px-4 md:mx-0 md:px-0">
-    {/* 移动 / 平板：水平滚动条 */}
-    <div
-      class="flex md:hidden gap-4 overflow-x-auto snap-x snap-mandatory pb-4 scrollbar-thin"
-      data-reveal
-      data-reveal-delay="0.1"
-    >
-      {
-        posters.map((p) => (
-          <div class="snap-center shrink-0 w-[78vw] max-w-[320px]">
-            <img
-              src={p.src}
-              alt={p.alt}
-              loading="lazy"
-              decoding="async"
-              class="w-full h-auto rounded-2xl shadow-lg ring-1 ring-ink-200/50 dark:ring-white/10"
-            />
-          </div>
-        ))
-      }
-    </div>
-
-    {/* 桌面：3 + 2 网格布局 */}
-    <div class="hidden md:grid grid-cols-3 gap-5 md:gap-6" data-reveal data-reveal-delay="0.1">
-      {
-        posters.slice(0, 3).map((p) => (
-          <div class="overflow-hidden rounded-2xl shadow-md ring-1 ring-ink-200/50 dark:ring-white/10 hover:shadow-xl transition-shadow">
-            <img src={p.src} alt={p.alt} loading="lazy" decoding="async" class="w-full h-auto" />
-          </div>
-        ))
-      }
-    </div>
-    <div class="hidden md:grid md:grid-cols-2 gap-5 md:gap-6 mt-5 md:mt-6 max-w-2xl mx-auto" data-reveal data-reveal-delay="0.2">
-      {
-        posters.slice(3).map((p) => (
-          <div class="overflow-hidden rounded-2xl shadow-md ring-1 ring-ink-200/50 dark:ring-white/10 hover:shadow-xl transition-shadow">
-            <img src={p.src} alt={p.alt} loading="lazy" decoding="async" class="w-full h-auto" />
-          </div>
-        ))
-      }
-    </div>
+  {/* 5 张招新海报：扑克牌堆叠 / 横排交互 */}
+  <div data-reveal data-reveal-delay="0.1">
+    <PosterStack posters={posters} initialIndex={0} />
   </div>
 
   {/* 4 个社团福利亮点 */}
