@@ -109,19 +109,57 @@ import siteData from '@data/site.json';
       </div>
 
       <div
-        class="mt-10 flex items-center justify-center gap-2 text-sm text-ink-500 dark:text-ink-400"
+        class="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6"
         data-hero-status
       >
-        <span
-          class:list={[
-            'inline-block w-2 h-2 rounded-full',
-            siteData.recruitment.status === 'open'
-              ? 'bg-emerald-500 pulse-glow'
-              : 'bg-ink-400',
-          ]}
-          aria-hidden="true"
-        ></span>
-        <span>{siteData.recruitment.message}</span>
+        <div class="flex items-center gap-2 text-sm text-ink-500 dark:text-ink-400">
+          <span
+            class:list={[
+              'inline-block w-2 h-2 rounded-full',
+              siteData.recruitment.status === 'open'
+                ? 'bg-emerald-500 pulse-glow'
+                : 'bg-ink-400',
+            ]}
+            aria-hidden="true"
+          ></span>
+          <span>{siteData.recruitment.message}</span>
+        </div>
+
+        {/* uiverse 风格 3D 跳转按钮 → 锚点跳转到 #recruitment-2026 */}
+        <a
+          href="#recruitment-2026"
+          class="relative group border-none bg-transparent p-0 outline-none cursor-pointer font-mono font-light uppercase text-base"
+          aria-label="查看 2026 招新详情"
+        >
+          {/* 底层（黑色阴影） */}
+          <span
+            class="absolute top-0 left-0 w-full h-full bg-black/25 rounded-lg transform translate-y-0.5 transition duration-[600ms] ease-[cubic-bezier(0.3,0.7,0.4,1)] group-hover:translate-y-1 group-hover:duration-[250ms] group-active:translate-y-px"
+            aria-hidden="true"
+          ></span>
+          {/* 底层渐变（深色金属感） */}
+          <span
+            class="absolute top-0 left-0 w-full h-full rounded-lg bg-gradient-to-l from-[hsl(217,33%,16%)] via-[hsl(217,33%,32%)] to-[hsl(217,33%,16%)]"
+            aria-hidden="true"
+          ></span>
+          {/* 顶层（彩色渐变 + 文字 + 箭头） */}
+          <div
+            class="relative flex items-center justify-between py-2.5 px-5 text-sm text-white rounded-lg transform -translate-y-1 bg-gradient-to-r from-[#f27121] via-[#e94057] to-[#8a2387] gap-3 transition duration-[600ms] ease-[cubic-bezier(0.3,0.7,0.4,1)] group-hover:-translate-y-1.5 group-hover:duration-[250ms] group-active:-translate-y-0.5 brightness-100 group-hover:brightness-110"
+          >
+            <span class="select-none tracking-wider">查看招新详情</span>
+            <svg
+              viewBox="0 0 20 20"
+              fill="currentColor"
+              class="w-4 h-4 ml-1 -mr-1 transition duration-250 group-hover:translate-x-1"
+              aria-hidden="true"
+            >
+              <path
+                clip-rule="evenodd"
+                d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"
+                fill-rule="evenodd"
+              ></path>
+            </svg>
+          </div>
+        </a>
       </div>
     </div>
   </div>
