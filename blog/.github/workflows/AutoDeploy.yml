@@ -1,0 +1,27 @@
+name: auto_deploy 
+on:
+  push:
+    branches:
+      - main 
+  pull_request:
+    branches:
+      - main
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: 3.x
+      - run: pip install mkdocs
+      - run: pip install mkdocs-material
+      - run: mkdocs build
+  # Deploy
+      - name: Deploy
+        uses: easingthemes/ssh-deploy@main
+        with:
+          SSH_PRIVATE_KEY: ${{ secrets.ISC_SERVER_PRIVATE_KEY }}
+          REMOTE_HOST: ${{ secrets.ISC_SERVER_HOST_ADDRESS }}
+          REMOTE_USER: ${{ secrets.ISC_SERVER_USER }}
+          TARGET: ${{ secrets.WORK_TARGEAT_PATH }} 

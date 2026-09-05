@@ -5,6 +5,9 @@ node_modules/
 dist/
 .astro/
 
+# MkDocs 博客构建产物（docs/ 是源文件，site/ 是 mkdocs build 输出）
+blog/site/
+
 # env
 .env
 .env.*

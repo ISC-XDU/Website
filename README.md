@@ -107,6 +107,29 @@ cover: /img/inspur/xxx.jpg
 正文 Markdown...
 ```
 
+## 博客（独立 MkDocs 项目）
+
+`blog/` 是从 `ISC-XDU/Blog` 克隆的 MkDocs 知识库（Material 主题）。
+
+```
+website-v2/
+└── blog/           # 独立 MkDocs 项目
+    ├── mkdocs.yml
+    ├── docs/        # Markdown 源文件（含技术文档 / 浪潮动态 / 图片）
+    └── site/        # mkdocs build 输出（被 .gitignore 排除）
+```
+
+### 关联方式
+- 网站导航"博客"项通过相对路径 `/blog/site/index.html` 链接到博客的构建产物
+- 部署时需要：(1) `cd blog && mkdocs build` 产生 `site/`；(2) 跟主站一起发布
+
+### 单独运行博客
+```bash
+cd blog
+pip install mkdocs mkdocs-material
+mkdocs serve        # http://localhost:8000
+```
+
 ## 部署（**未来讨论，MVP 不实施**）
 
 未来需要部署到生产时，待讨论的决策点：
