@@ -63,6 +63,7 @@ import siteData from '@data/site.json';
               stroke="url(#hero-gradient)"
               stroke-width="3"
               stroke-linecap="round"
+              data-hero-accent-path
             />
             <defs>
               <linearGradient id="hero-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
@@ -198,16 +199,24 @@ import siteData from '@data/site.json';
       0.2
     );
 
-    // accent 下划线绘制
-    tl.from(
-      '[data-hero-accent] svg',
-      {
-        scaleX: 0,
-        transformOrigin: 'left center',
-        duration: 0.8,
-      },
-      0.9
-    );
+    // accent 下划线：先直线 scaleX 0→1 绘制，再 morphSVG 直线 → 波浪
+    const accentPath = document.querySelector<SVGPathElement>('[data-hero-accent-path]');
+    const WAVE_PATH = 'M0 4 Q 50 0, 100 4 T 200 4';
+    const STRAIGHT_PATH = 'M0 4 L 200 4';
+    if (accentPath) {
+      accentPath.setAttribute('d', STRAIGHT_PATH);
+      tl.fromTo(
+        accentPath,
+        { scaleX: 0, transformOrigin: 'left center' },
+        { scaleX: 1, duration: 0.45, ease: 'power2.out' },
+        0.9
+      );
+      tl.to(
+        accentPath,
+        { morphSVG: WAVE_PATH, duration: 0.65, ease: 'power2.inOut' },
+        1.35
+      );
+    }
 
     // 副文
     tl.from(

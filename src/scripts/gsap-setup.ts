@@ -5,6 +5,7 @@
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { SplitText } from 'gsap/SplitText';
+import { MorphSVGPlugin } from 'gsap/MorphSVGPlugin';
 
 let registered = false;
 
@@ -14,7 +15,7 @@ let registered = false;
  */
 export function initGSAP(): typeof gsap {
   if (registered) return gsap;
-  gsap.registerPlugin(ScrollTrigger, SplitText);
+  gsap.registerPlugin(ScrollTrigger, SplitText, MorphSVGPlugin);
   registered = true;
 
   // 默认 easing
