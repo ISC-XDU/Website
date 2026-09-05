@@ -344,6 +344,9 @@ const { posters, initialIndex = 0 } = Astro.props;
 
     function flipTopCard(direction: 'left' | 'right') {
       const top = posters[topIndex];
+      // 防抖：翻牌动画期间不允许再次触发（否则多个 transitionend + timeout 叠加会错乱）
+      if (top.classList.contains('is-flipping')) return;
+
       const targetX = direction === 'left' ? -window.innerWidth * 0.8 : window.innerWidth * 0.8;
       const targetRot = direction === 'left' ? -25 : 25;
 
@@ -352,7 +355,12 @@ const { posters, initialIndex = 0 } = Astro.props;
       const t = getTransform(top);
       applyTransform(top, { ...t, x: targetX, rot: targetRot, opacity: 0 });
 
+      // 一次性执行：transitionend 和 setTimeout(500) 兜底都可能触发 onEnd，
+      // 若无标志位，topIndex 会被步进两次（每翻一张实际跳过两张，顺序错乱）
+      let done = false;
       const onEnd = () => {
+        if (done) return;
+        done = true;
         top.removeEventListener('transitionend', onEnd);
         top.classList.remove('is-flipping');
         // 移动 topIndex
