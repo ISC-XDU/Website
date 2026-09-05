@@ -9,6 +9,7 @@ const {
   class: className = '',
   interactive = false,
   as: Tag = 'div',
+  ...rest
 }: Props = Astro.props;
 
 const base = 'bg-white rounded-xl border border-ink-100 overflow-hidden';
@@ -17,6 +18,6 @@ const interactiveClasses = interactive
   : '';
 ---
 
-<Tag class:list={[base, interactiveClasses, className]}>
+<Tag class:list={[base, interactiveClasses, className]} {...rest}>
   <slot />
 </Tag>

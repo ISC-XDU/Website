@@ -8,7 +8,7 @@ interface Props {
   enableReveal?: boolean;
 }
 
-const { title, description, containerClass = 'py-10 md:py-16', enableReveal = false } = Astro.props;
+const { title, description, containerClass = 'py-10 md:py-16', enableReveal = true } = Astro.props;
 ---
 
 <BaseLayout title={title} description={description} enableReveal={enableReveal}>

@@ -7,7 +7,7 @@ import siteData from '@data/site.json';
 <Section background="default" containerClass="!py-20 md:!py-28">
   <div class="grid lg:grid-cols-5 gap-8 lg:gap-12 items-start">
     {/* 左 2 列：俱乐部概览文字 */}
-    <div class="lg:col-span-2 reveal" data-reveal data-reveal-delay="0">
+    <div class="lg:col-span-2" data-reveal data-reveal-delay="0">
       <span
         class="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wider rounded-full px-3 py-1 mb-3
                glass text-xidian-500"
@@ -43,7 +43,7 @@ import siteData from '@data/site.json';
     </div>
 
     {/* 右 3 列：部门 Bento 卡片 */}
-    <div class="lg:col-span-3 grid sm:grid-cols-2 gap-5 reveal" data-reveal data-reveal-delay="0.1">
+    <div class="lg:col-span-3 grid sm:grid-cols-2 gap-5" data-reveal data-reveal-delay="0.1">
       {/* 技术部：大卡 */}
       <Card class="group glass glass-hover md:col-span-2 !rounded-3xl relative overflow-hidden">
         <div class="absolute -top-12 -right-12 w-40 h-40 rounded-full bg-gradient-to-br from-inspur-500 to-cyan-500 opacity-15 blur-2xl" aria-hidden="true"></div>

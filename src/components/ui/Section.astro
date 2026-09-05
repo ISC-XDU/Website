@@ -25,12 +25,14 @@ const backgrounds = {
 };
 
 const sectionClass = `${backgrounds[background]} ${className}`;
-const revealClass = reveal
-  ? `reveal${revealDelay > 0 ? ` reveal-delay-${revealDelay}` : ''}`
-  : '';
+
+// 滚动入场标记：被 RevealOnScroll 的 ScrollTrigger.batch 接管
+const revealAttrs: Record<string, string> = reveal
+  ? { 'data-reveal': '', 'data-reveal-delay': String(revealDelay * 0.08) }
+  : {};
 ---
 
-<section id={id} class:list={[sectionClass, 'py-12 md:py-20', revealClass]}>
+<section id={id} class={sectionClass} class:list={['py-12 md:py-20']} {...revealAttrs}>
   <div class:list={['container-page', containerClass]}>
     <slot />
   </div>

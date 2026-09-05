@@ -277,25 +277,4 @@ function isActive(href: string): boolean {
 
   document.addEventListener('scroll', onScroll, { passive: true });
   onScroll();
-
-  // 3. wpkoi 风格：滚动进入视口时元素淡入上浮
-  if ('IntersectionObserver' in window) {
-    const io = new IntersectionObserver(
-      (entries) => {
-        for (const entry of entries) {
-          if (entry.isIntersecting) {
-            entry.target.classList.add('is-revealed');
-            io.unobserve(entry.target);
-          }
-        }
-      },
-      { threshold: 0.12, rootMargin: '0px 0px -60px 0px' }
-    );
-    document.querySelectorAll<HTMLElement>('.reveal').forEach((el) => io.observe(el));
-  } else {
-    // 降级：直接全部显示
-    document.querySelectorAll<HTMLElement>('.reveal').forEach((el) => {
-      el.classList.add('is-revealed');
-    });
-  }
 </script>
