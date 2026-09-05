@@ -45,7 +45,7 @@ const accentMap: Record<string, string> = {
 ---
 
 <Section background="default" containerClass="!py-20 md:!py-28">
-  <div class="text-center max-w-3xl mx-auto mb-14 reveal">
+  <div class="text-center max-w-3xl mx-auto mb-14 reveal" data-reveal data-reveal-delay="0">
     <span
       class="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wider rounded-full px-3 py-1 mb-3
              glass text-inspur-600 dark:text-inspur-300"
@@ -63,7 +63,7 @@ const accentMap: Record<string, string> = {
   </div>
 
   {/* Bento 网格：1 大（编码技术）+ 3 小（运营/团队/学习） */}
-  <div class="grid grid-cols-1 md:grid-cols-3 gap-5 md:gap-6 reveal">
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-5 md:gap-6 reveal" data-reveal data-reveal-delay="0.1">
     {/* 大卡（占 2 列宽） */}
     {
       items.filter((i) => i.featured).map((item) => (

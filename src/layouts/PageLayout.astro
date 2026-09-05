@@ -5,12 +5,13 @@ interface Props {
   title?: string;
   description?: string;
   containerClass?: string;
+  enableReveal?: boolean;
 }
 
-const { title, description, containerClass = 'py-10 md:py-16' } = Astro.props;
+const { title, description, containerClass = 'py-10 md:py-16', enableReveal = false } = Astro.props;
 ---
 
-<BaseLayout title={title} description={description}>
+<BaseLayout title={title} description={description} enableReveal={enableReveal}>
   <div class:list={['container-page', containerClass]}>
     <slot />
   </div>

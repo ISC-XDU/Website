@@ -3,6 +3,7 @@ import '@/styles/global.css';
 import SiteHeader from '@components/layout/SiteHeader.astro';
 import SiteFooter from '@components/layout/SiteFooter.astro';
 import SkipLink from '@components/layout/SkipLink.astro';
+import RevealOnScroll from '@components/scripts/RevealOnScroll.astro';
 import siteData from '@data/site.json';
 
 interface Props {
@@ -12,6 +13,8 @@ interface Props {
   noindex?: boolean;
   /** 强制 header 变体；不传则根据路径自动判断（'/' = home, 其他 = subpage） */
   headerVariant?: 'home' | 'subpage';
+  /** 启用 ScrollTrigger 滚动入场动画（仅主页 5 段使用） */
+  enableReveal?: boolean;
 }
 
 const {
@@ -20,6 +23,7 @@ const {
   image = '/favicon.svg',
   noindex = false,
   headerVariant,
+  enableReveal = false,
 } = Astro.props;
 
 // 自动判断：根路径是 home，其他都是 subpage
@@ -79,5 +83,6 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
       <slot />
     </main>
     <SiteFooter />
+    {enableReveal && <RevealOnScroll />}
   </body>
 </html>
