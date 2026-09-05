@@ -23,5 +23,11 @@ export default defineConfig({
         },
       },
     },
+    // GSAP 3.15.0 ESM 入口 (index.js) 内部 registerPlugin 链有循环依赖，
+    // 直接 import 在某些时序下会触发 TDZ 错误（'Cannot access I before
+    // initialization'）。强制预打包走 CJS 路径解决。
+    optimizeDeps: {
+      include: ['gsap', 'gsap/ScrollTrigger', 'gsap/SplitText', 'gsap/MorphSVGPlugin'],
+    },
   },
 });
