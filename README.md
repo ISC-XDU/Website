@@ -57,14 +57,56 @@ website-v2/
 │   ├── data/            # JSON 数据（成员/站点配置/导航）
 │   ├── layouts/         # 布局
 │   ├── pages/           # 路由（6 个页面）
+│   ├── scripts/         # GSAP 插件注册 + 共享工具
 │   ├── styles/          # 全局样式
 │   └── lib/             # 工具函数
 ├── scripts/             # 一次性脚本（成员数据迁移等）
+├── docs/                # 设计与实施计划文档
 ├── astro.config.mjs
 ├── tailwind.config.ts
 ├── tsconfig.json
 └── package.json
 ```
+
+## 动画系统
+
+使用 [GSAP 3](https://gsap.com/) 三个插件（自 2024-05 Webflow 收购后**全部 100% 免费**）：
+
+| 插件 | 作用 | 使用位置 |
+|---|---|---|
+| `ScrollTrigger` | 滚动到视口触发入场 / 滚动驱动动画 | 全站 `data-reveal` 元素；StatsBar 数字滚动进度 |
+| `SplitText` | 官方字符级拆字 | Hero「浪潮er」标题；3 段 H2 字符级联入场 |
+| `MorphSVGPlugin` | SVG path 形变 | Hero 下划线「直线→波浪」；StatsBar 角标 hover |
+
+### 架构
+
+- **集中注册**：`src/scripts/gsap-setup.ts` 暴露 `initGSAP()`（幂等），各组件按需调用
+- **滚动入场统一入口**：`src/components/scripts/RevealOnScroll.astro`
+  - `[data-reveal]` 元素用 `ScrollTrigger.batch` 触发淡入上浮
+  - `[data-split-title]` 元素用 SplitText 拆字符 + ScrollTrigger 字符级联
+  - 严格遵守 `prefers-reduced-motion: reduce` 媒体查询
+- **PageLayout `enableReveal` prop**：默认 `true`（全站启用），无需手动控制
+
+### 加新入场动画
+
+```astro
+<!-- Section 级别 -->
+<Section background="default" reveal revealDelay={2}>
+  <!-- 整段淡入上浮，0.16s 延迟 -->
+</Section>
+
+<!-- 单元素级别 -->
+<div data-reveal data-reveal-delay="0.1">
+  <!-- 自定义延迟 0.1s -->
+</div>
+
+<!-- 标题字符级联 -->
+<h2 data-split-title>...</h2>
+```
+
+### 详细计划
+
+参见 `docs/gsap-plugins-plan.md`（4 阶段：ScrollTrigger 基建 → SplitText 字符入场 → MorphSVG 点缀 → 清理 .reveal CSS）。
 
 ## 内容编辑
 

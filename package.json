@@ -24,6 +24,7 @@
     "typescript": "^5.7.3",
     "zod": "^3.24.1"
   },
+  "_gsap_note": "GSAP 自 2024-05 由 Webflow 收购后所有插件 100% 免费（含 SplitText / MorphSVG / MorphSVGPlugin / DrawSVG / Physics2D 等），可直接 import 无需商业授权。",
   "devDependencies": {
     "@tailwindcss/typography": "^0.5.20",
     "eslint": "^9.17.0",
