@@ -205,23 +205,25 @@ import siteData from '@data/site.json';
     const WAVE_PATH = 'M0 4 Q 50 0, 100 4 T 200 4';
     const STRAIGHT_PATH = 'M0 4 L 200 4';
     if (accentPath) {
-      // 把 path 设为直线，并把整条线"藏"在 dashoffset 里待绘制
+      // 把 path 设为直线。直线 'M0 4 L 200 4' 长度确定 = 200，
+      // 不依赖 getTotalLength（部分浏览器时机不对会返回 0）。
+      const PATH_LENGTH = 200;
       accentPath.setAttribute('d', STRAIGHT_PATH);
-      const pathLength = accentPath.getTotalLength();
-      accentPath.style.strokeDasharray = String(pathLength);
-      accentPath.style.strokeDashoffset = String(pathLength);
+      accentPath.setAttribute('stroke-dasharray', String(PATH_LENGTH));
+      accentPath.setAttribute('stroke-dashoffset', String(PATH_LENGTH));
 
-      // 1) 直线绘制：dashoffset 从 pathLength 动画到 0
-      tl.to(
+      // 1) 直线绘制：dashoffset 从 PATH_LENGTH 动画到 0（0.6s-1.3s）
+      tl.fromTo(
         accentPath,
-        { strokeDashoffset: 0, duration: 0.45, ease: 'power2.out' },
-        0.9
+        { 'stroke-dashoffset': PATH_LENGTH },
+        { 'stroke-dashoffset': 0, duration: 0.7, ease: 'power2.out' },
+        0.6
       );
-      // 2) 直线 → 波浪 形变
+      // 2) 直线 → 波浪 形变（1.3s-2.2s）
       tl.to(
         accentPath,
-        { morphSVG: WAVE_PATH, duration: 0.65, ease: 'power2.inOut' },
-        1.35
+        { morphSVG: WAVE_PATH, duration: 0.9, ease: 'power2.inOut' },
+        1.3
       );
     }
 
