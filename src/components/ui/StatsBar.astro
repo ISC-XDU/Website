@@ -16,6 +16,14 @@ const colorMap = {
   warning: 'from-amber-500 to-rose-500',
 };
 
+// 用于 SVG 角标 stroke="currentColor" 的文本色映射
+const textColorMap: Record<string, string> = {
+  primary: 'text-inspur-500',
+  danger: 'text-xidian-500',
+  success: 'text-emerald-500',
+  warning: 'text-amber-500',
+};
+
 const stats: Stat[] = [
   { value: siteData.stats.members, label: '位同学', color: 'primary', icon: '👥' },
   { value: siteData.stats.departments, label: '大部门', color: 'danger', icon: '🏛' },
@@ -43,6 +51,22 @@ const stats: Stat[] = [
           ></div>
 
           <div class="relative">
+            {/* 角标 SVG 装饰：hover 时 GSAP MorphSVG 直线 → 波浪 */}
+            <svg
+              class:list={[
+                'absolute top-3 right-3 w-6 h-6 opacity-40 group-hover:opacity-90 transition-opacity pointer-events-none',
+                textColorMap[s.color ?? 'primary'],
+              ]}
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+              stroke-linecap="round"
+              aria-hidden="true"
+            >
+              <path d="M2 12 Q 12 12 22 12" data-stat-decor-path />
+            </svg>
+
             <div class="text-3xl mb-2" aria-hidden="true">{s.icon}</div>
             <div
               class:list={[
@@ -100,5 +124,38 @@ const stats: Stat[] = [
       { threshold: 0.3 }
     );
     document.querySelectorAll<HTMLElement>('[data-stat-value]').forEach((el) => io.observe(el));
+  }
+
+  // 角标 SVG MorphSVG hover：直线 ↔ 波浪
+  // 异步 import GSAP + MorphSVGPlugin，主页才用到，sub-page 跳过
+  if (document.querySelector('[data-stat-decor-path]')) {
+    Promise.all([import('gsap'), import('gsap/MorphSVGPlugin')]).then(
+      ([{ gsap }, { MorphSVGPlugin }]) => {
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+        gsap.registerPlugin(MorphSVGPlugin);
+        const STRAIGHT = 'M2 12 Q 12 12 22 12';
+        const WAVE = 'M2 12 Q 12 4 22 12';
+        document.querySelectorAll<HTMLElement>('[data-stat-card]').forEach((card) => {
+          const path = card.querySelector<SVGPathElement>('[data-stat-decor-path]');
+          if (!path) return;
+          card.addEventListener('mouseenter', () => {
+            gsap.to(path, {
+              morphSVG: WAVE,
+              duration: 0.4,
+              ease: 'power2.out',
+              overwrite: 'auto',
+            });
+          });
+          card.addEventListener('mouseleave', () => {
+            gsap.to(path, {
+              morphSVG: STRAIGHT,
+              duration: 0.4,
+              ease: 'power2.out',
+              overwrite: 'auto',
+            });
+          });
+        });
+      }
+    );
   }
 </script>
