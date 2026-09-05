@@ -1,6 +1,5 @@
 ---
 import Card from '@components/ui/Card.astro';
-import Modal from '@components/ui/Modal.astro';
 import { getRole, type Member } from '@lib/members';
 
 interface Props {
@@ -8,82 +7,149 @@ interface Props {
 }
 
 const { member } = Astro.props;
-const modalId = `modal-member-${member.year}-${member.name}`;
-const emailLink = member.email ? `mailto:${member.email}` : null;
 const role = getRole(member);
+const emailLink = member.email ? `mailto:${member.email}` : null;
 ---
 
-<Card class="h-full group" interactive data-reveal>
-  <div class="relative p-5 text-center flex flex-col items-center h-full">
-    {/* 背景渐变装饰球（hover 点亮，风格同主页 StatsBar） */}
-    <div
-      class="absolute -top-10 -right-10 w-28 h-28 rounded-full bg-gradient-to-br from-inspur-400 to-cyan-400 opacity-10 blur-2xl group-hover:opacity-30 transition-opacity duration-300 pointer-events-none"
-      aria-hidden="true"
-    ></div>
+<div
+  class="h-full [perspective:1200px]"
+  data-member-flip
+  data-flipped="false"
+  tabindex="0"
+  role="button"
+  aria-expanded="false"
+  aria-label={`${member.name}，点击翻转查看简介`}
+>
+  <Card
+    class="h-full group relative cursor-pointer !overflow-visible [transform-style:preserve-3d] transition-all duration-500 ease-[cubic-bezier(0.3,0.6,0.3,1)] hover:border-inspur-200"
+    interactive
+  >
+    {/* 正面：头像 / 姓名 / 身份徽章 / 提示 */}
+    <div class="flip-face front relative p-5 text-center flex flex-col items-center h-full">
+      {/* 背景渐变装饰球（hover 点亮） */}
+      <div
+        class="absolute -top-10 -right-10 w-28 h-28 rounded-full bg-gradient-to-br from-inspur-400 to-cyan-400 opacity-10 blur-2xl group-hover:opacity-30 transition-opacity duration-300 pointer-events-none"
+        aria-hidden="true"
+      ></div>
 
-    {/* 头像：渐变圆环 */}
-    <div
-      class="relative w-24 h-24 rounded-full p-[3px] mb-3 bg-gradient-to-br from-inspur-400 via-cyan-400 to-xidian-400 shadow-md shadow-inspur-500/10 group-hover:scale-105 transition-transform duration-300"
-    >
-      <div class="w-full h-full rounded-full overflow-hidden bg-ink-100 ring-1 ring-white/60 dark:ring-black/20">
-        <img
-          src={member.avatar}
-          alt={`${member.name} 头像`}
-          class="w-full h-full object-cover"
-          loading="lazy"
-          decoding="async"
-          onerror="this.style.display='none'"
-        />
+      {/* 头像：渐变圆环 */}
+      <div
+        class="relative w-24 h-24 rounded-full p-[3px] mb-3 bg-gradient-to-br from-inspur-400 via-cyan-400 to-xidian-400 shadow-md shadow-inspur-500/10 group-hover:scale-105 transition-transform duration-300"
+      >
+        <div class="w-full h-full rounded-full overflow-hidden bg-ink-100 ring-1 ring-white/60 dark:ring-black/20">
+          <img
+            src={member.avatar}
+            alt={`${member.name} 头像`}
+            class="w-full h-full object-cover"
+            loading="lazy"
+            decoding="async"
+            onerror="this.style.display='none'"
+          />
+        </div>
+        <span class="absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full bg-inspur-500 ring-2 ring-white dark:ring-ink-800" aria-hidden="true"></span>
       </div>
-      {/* 渐变环上的品牌圆点 */}
-      <span class="absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full bg-inspur-500 ring-2 ring-white dark:ring-ink-800" aria-hidden="true"></span>
-    </div>
 
-    <h3 class="text-base font-semibold text-ink-900 mb-1.5">{member.name}</h3>
+      <h3 class="text-base font-semibold text-ink-900 mb-1.5">{member.name}</h3>
 
-    {/* 身份徽章（从 bio 提取，如"主席"、"技术部部长"） */}
-    {role && (
-      <span
-        class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium
-               bg-inspur-50 text-inspur-600 border border-inspur-100
-               dark:bg-inspur-900/30 dark:text-inspur-300 dark:border-inspur-700/40 mb-2"
-      >
-        ★ {role}
-      </span>
-    )}
-
-    <div class="flex items-center gap-2 text-sm flex-wrap justify-center mt-auto">
-      <button
-        type="button"
-        class="text-white bg-inspur-600 hover:bg-inspur-700 px-3 py-1 rounded-md text-xs transition-colors"
-        data-modal-open={modalId}
-      >
-        查看详情
-      </button>
-      {emailLink && (
-        <a
-          href={emailLink}
-          class="inline-flex items-center gap-1 text-xs text-ink-500 hover:text-inspur-600
-                 border border-ink-200 dark:border-ink-700 rounded-md px-2.5 py-1 transition-colors"
+      {role && (
+        <span
+          class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium
+                 bg-inspur-50 text-inspur-600 border border-inspur-100
+                 dark:bg-inspur-900/30 dark:text-inspur-300 dark:border-inspur-700/40 mb-2"
         >
-          📧 Email
-        </a>
+          ★ {role}
+        </span>
       )}
-    </div>
-  </div>
-</Card>
 
-<Modal id={modalId} title={`${member.name} · ${member.year} 级`} size="md">
-  {member.bio ? (
-    <p class="text-ink-700 leading-relaxed text-sm whitespace-pre-line">{member.bio}</p>
-  ) : (
-    <p class="text-ink-500 italic">暂无简介</p>
-  )}
-  {emailLink && (
-    <p class="mt-4 text-sm">
-      <a href={emailLink} class="text-inspur-600 hover:underline">
-        📧 {member.email}
-      </a>
-    </p>
-  )}
-</Modal>
+      <div class="mt-auto flex items-center gap-2 text-sm flex-wrap justify-center">
+        <span
+          class="inline-flex items-center gap-1.5 px-3 py-1 rounded-md text-xs font-medium
+                 text-white bg-inspur-600 group-hover:bg-inspur-700 transition-colors"
+        >
+          <svg class="w-3 h-3" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+            <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
+          </svg>
+          查看简介
+        </span>
+      </div>
+    </div>
+
+    {/* 背面：简介 + 联系方式（预翻转 180°，容器翻转后回正） */}
+    <div class="flip-face back p-4 flex flex-col bg-white dark:bg-ink-900 rounded-xl">
+      <p class="text-sm font-semibold text-ink-900 mb-2">{member.name} · {member.year} 级</p>
+      <div class="flex-1 overflow-y-auto min-h-0">
+        {member.bio ? (
+          <p class="text-xs leading-relaxed text-ink-700 dark:text-ink-300 whitespace-pre-line">{member.bio}</p>
+        ) : (
+          <p class="text-xs text-ink-500 italic">暂无简介</p>
+        )}
+      </div>
+      <div class="mt-2 pt-2 border-t border-ink-100 dark:border-ink-800 flex items-center gap-2 flex-wrap">
+        {emailLink && (
+          <a
+            href={emailLink}
+            class="text-xs text-ink-500 hover:text-inspur-600 transition-colors"
+            onclick="event.stopPropagation()"
+          >
+            📧 {member.email}
+          </a>
+        )}
+        <span class="ml-auto text-[11px] text-ink-400 select-none">点击收回 ↺</span>
+      </div>
+    </div>
+  </Card>
+</div>
+
+<style>
+  /* ===== 3D 翻转 ===== */
+  .flip-face {
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+  }
+  /* 背面预翻转，等容器翻 180° 后回正 */
+  .flip-face.back {
+    position: absolute;
+    inset: 0;
+    transform: rotateY(180deg);
+  }
+  /* 翻转态：整个卡片旋转 180° 并轻微放大，浮在邻居之上 */
+  [data-member-flip][data-flipped='true'] > * {
+    transform: rotateY(180deg) scale(1.06);
+    z-index: 20;
+  }
+</style>
+
+<script>
+  // 点击卡片翻转（正面 → 背面内联简介），再点收回
+  document.querySelectorAll<HTMLElement>('[data-member-flip]').forEach((card) => {
+    const toggle = () => {
+      const flipped = card.dataset.flipped === 'true';
+      card.dataset.flipped = String(!flipped);
+      card.setAttribute('aria-expanded', String(!flipped));
+    };
+
+    card.addEventListener('click', (e) => {
+      // 背面的 Email 链接不触发翻转
+      const target = e.target as HTMLElement;
+      if (target.closest('a')) return;
+      toggle();
+    });
+
+    // 键盘：Enter / 空格翻转
+    card.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        toggle();
+      }
+    });
+  });
+
+  // Esc 收回所有已翻转的卡片
+  window.addEventListener('keydown', (e) => {
+    if (e.key !== 'Escape') return;
+    document.querySelectorAll<HTMLElement>('[data-member-flip][data-flipped="true"]').forEach((card) => {
+      card.dataset.flipped = 'false';
+      card.setAttribute('aria-expanded', 'false');
+    });
+  });
+</script>

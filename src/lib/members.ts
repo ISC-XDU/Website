@@ -23,9 +23,9 @@ export function groupByYear(): Record<number, Member[]> {
   }, {});
 }
 
-/** 所有届期（升序） */
+/** 所有届期（降序：年份最大的新一届在最前） */
 export function getYears(): number[] {
-  return Array.from(new Set(members.map((m) => m.year))).sort((a, b) => a - b);
+  return Array.from(new Set(members.map((m) => m.year))).sort((a, b) => b - a);
 }
 
 /** 成员总数 */
