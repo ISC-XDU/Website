@@ -127,35 +127,34 @@ const stats: Stat[] = [
   }
 
   // 角标 SVG MorphSVG hover：直线 ↔ 波浪
-  // 异步 import GSAP + MorphSVGPlugin，主页才用到，sub-page 跳过
+  // GSAP 通过 BaseLayout UMD 加载到 window.gsap；window.MorphSVGPlugin 已注册
   if (document.querySelector('[data-stat-decor-path]')) {
-    Promise.all([import('gsap'), import('gsap/MorphSVGPlugin')]).then(
-      ([{ gsap }, { MorphSVGPlugin }]) => {
-        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-        gsap.registerPlugin(MorphSVGPlugin);
-        const STRAIGHT = 'M2 12 Q 12 12 22 12';
-        const WAVE = 'M2 12 Q 12 4 22 12';
-        document.querySelectorAll<HTMLElement>('[data-stat-card]').forEach((card) => {
-          const path = card.querySelector<SVGPathElement>('[data-stat-decor-path]');
-          if (!path) return;
-          card.addEventListener('mouseenter', () => {
-            gsap.to(path, {
-              morphSVG: WAVE,
-              duration: 0.4,
-              ease: 'power2.out',
-              overwrite: 'auto',
-            });
-          });
-          card.addEventListener('mouseleave', () => {
-            gsap.to(path, {
-              morphSVG: STRAIGHT,
-              duration: 0.4,
-              ease: 'power2.out',
-              overwrite: 'auto',
-            });
+    (() => {
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      const gsap = (window as any).gsap;
+      if (!gsap) return;
+      const STRAIGHT = 'M2 12 Q 12 12 22 12';
+      const WAVE = 'M2 12 Q 12 4 22 12';
+      document.querySelectorAll<HTMLElement>('[data-stat-card]').forEach((card) => {
+        const path = card.querySelector<SVGPathElement>('[data-stat-decor-path]');
+        if (!path) return;
+        card.addEventListener('mouseenter', () => {
+          gsap.to(path, {
+            morphSVG: WAVE,
+            duration: 0.4,
+            ease: 'power2.out',
+            overwrite: 'auto',
           });
         });
-      }
-    );
+        card.addEventListener('mouseleave', () => {
+          gsap.to(path, {
+            morphSVG: STRAIGHT,
+            duration: 0.4,
+            ease: 'power2.out',
+            overwrite: 'auto',
+          });
+        });
+      });
+    })();
   }
 </script>

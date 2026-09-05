@@ -29,3 +29,7 @@ Thumbs.db
 .cache/
 .tmp/
 *.local
+
+# 临时调试 / 已废置的本地脚本（用 *.dead 命名避免误删）
+*.dead
+*.dead/

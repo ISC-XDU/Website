@@ -177,12 +177,16 @@ import siteData from '@data/site.json';
 </section>
 
 <script>
-  import { gsap } from 'gsap';
-  import { SplitText } from 'gsap/SplitText';
+  // GSAP 通过 BaseLayout UMD 加载到 window.gsap + window.ScrollTrigger + window.SplitText
+  // 完全不再 import ESM（避免 GSAP 3.15 在 Vite inline 时的 TDZ 循环依赖）
 
   function initHeroAnimations() {
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (reduceMotion) return;
+
+    const gsap = (window as any).gsap;
+    const SplitText = (window as any).SplitText;
+    if (!gsap || !SplitText) return;
 
     const titleEl = document.querySelector<HTMLElement>('[data-hero-title]');
     if (!titleEl) return;
@@ -284,7 +288,7 @@ import siteData from '@data/site.json';
     );
 
     // 浮动球持续呼吸
-    gsap.utils.toArray<HTMLElement>('[data-orb]').forEach((orb, i) => {
+    (gsap as any).utils.toArray('[data-orb]').forEach((orb: any, i: number) => {
       gsap.to(orb, {
         y: 'random(-30, 30)',
         x: 'random(-20, 20)',

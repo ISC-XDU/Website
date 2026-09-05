@@ -10,6 +10,8 @@
  *   - stacked 态：拖动 topIndex 牌（左右）翻牌 / 点击 topIndex 牌展开
  *   - expanded 态：拖动空白区切换 focus / 点击 focus 牌收回
  *   - 键盘：←→ 翻/切，Enter 展开/收回，Esc 收回
+ *
+ * 纯 CSS + 自写 JS 实现，避免 GSAP 3.15 ESM 在 Vite inline 时的 TDZ 问题。
  */
 
 interface Props {
@@ -32,7 +34,7 @@ const { posters, initialIndex = 0 } = Astro.props;
     posters.map((p, i) => (
       <button
         type="button"
-        class="poster absolute inset-0 m-auto w-[180px] h-[320px] sm:w-[200px] sm:h-[356px] md:w-[220px] md:h-[392px] rounded-2xl overflow-hidden shadow-xl ring-1 ring-black/5 dark:ring-white/10 bg-white dark:bg-ink-900 cursor-grab active:cursor-grabbing focus:outline-none focus-visible:ring-2 focus-visible:ring-inspur-500 will-change-transform"
+        class="poster absolute inset-0 m-auto w-[180px] h-[320px] sm:w-[200px] sm:h-[356px] md:w-[220px] md:h-[392px] rounded-2xl overflow-hidden shadow-xl ring-1 ring-black/5 dark:ring-white/10 bg-white dark:bg-ink-900 cursor-grab active:cursor-grabbing focus:outline-none focus-visible:ring-2 focus-visible:ring-inspur-500"
         data-poster
         data-poster-index={i}
         aria-label={`海报 ${i + 1} / ${posters.length}：${p.alt}`}
@@ -67,7 +69,7 @@ const { posters, initialIndex = 0 } = Astro.props;
 
   {/* 模式提示（首次进入时短暂显示） */}
   <div
-    class="absolute top-2 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full glass text-xs text-ink-600 dark:text-ink-300 pointer-events-none transition-opacity duration-500"
+    class="absolute top-2 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full glass text-xs text-ink-600 dark:text-ink-300 pointer-events-none transition-opacity duration-500 opacity-0"
     data-poster-hint
   >
     <span data-hint-stacked>← 滑动翻牌 · 点击展开 →</span>
@@ -78,8 +80,12 @@ const { posters, initialIndex = 0 } = Astro.props;
 <style>
   .poster {
     transform-origin: center center;
+    transition: transform 0.55s cubic-bezier(0.2, 0.7, 0.3, 1),
+      opacity 0.4s ease-out;
+    will-change: transform, opacity;
     user-select: none;
     -webkit-user-drag: none;
+    backface-visibility: hidden;
   }
   .poster img {
     -webkit-user-drag: none;
@@ -94,35 +100,37 @@ const { posters, initialIndex = 0 } = Astro.props;
     width: 24px;
     background-color: rgb(var(--inspur-500, 47 109 255));
   }
+  /* 翻牌飞出动画：用 transition 而非 GSAP */
+  .poster.is-flipping {
+    transition: transform 0.45s cubic-bezier(0.55, 0.05, 0.85, 0.3),
+      opacity 0.45s ease-in;
+  }
 </style>
 
 <script>
-  import { gsap } from 'gsap';
+  // 纯 JS 状态管理 + CSS transition 实现，避免 GSAP ESM TDZ 陷阱
 
   // 堆叠态配置
   const STACK = {
-    offsetY: 14, // 后面牌向 y 偏移的步长（px）
-    rotateBase: 2.5, // 后面牌旋转基础角度（deg）
-    rotateStep: 2, // 每多一层额外加的角度
-    scaleStep: 0.04, // 每多一层缩小的比例
-    opacityStep: 0.1, // 每多一层透明度降低
+    offsetY: 14,
+    rotateBase: 2.5,
+    rotateStep: 2,
+    scaleStep: 0.04,
+    opacityStep: 0.1,
   };
 
   // 展开态配置
   const EXPAND = {
-    gapPx: 70, // 中心牌与相邻牌的水平距离系数
+    gapPx: 70,
     focusScale: 1.18,
     side1Scale: 0.88,
     side2Scale: 0.7,
     focusOpacity: 1,
     side1Opacity: 0.65,
     side2Opacity: 0.3,
-    duration: 0.55,
   };
 
-  // 拖动翻牌阈值
-  const FLIP_THRESHOLD = 80; // px
-  // 展开态拖动切换 focus 的阈值
+  const FLIP_THRESHOLD = 80;
   const EXPAND_DRAG_THRESHOLD = 50;
 
   type Mode = 'stacked' | 'expanded';
@@ -136,39 +144,69 @@ const { posters, initialIndex = 0 } = Astro.props;
     const n = posters.length;
     let mode: Mode = 'stacked';
     let topIndex = parseInt(root.dataset.initialIndex ?? '0', 10) || 0;
+    // 记录每张牌已应用的 transform，避免被 stale 值覆盖
+    const currentTransforms = new Map<HTMLElement, string>();
+    // hint chip 定时器：必须在所有函数声明之前初始化，
+    // 因为 showHint() 在 initStack 函数体内 early 就被调用（layoutStack/updateIndicator/showHint 顺序），
+    // 否则会触发 `let` 的 TDZ（Cannot access 'hintTimer' before initialization）
+    let hintTimer: number | undefined;
 
-    // 初始布局：模板用 inset-0 m-auto 让 absolute 元素 CSS 居中，GSAP 不用 xPercent/yPercent
+    function getTransform(el: HTMLElement): { x: number; y: number; rot: number; scale: number; opacity: number } {
+      const t = currentTransforms.get(el);
+      if (t) {
+        const m = t.match(/translate3d\(([^,]+)px,\s*([^,]+)px,\s*0px\)\s*rotate\((-?[\d.]+)deg\)\s*scale\(([\d.]+)\)/);
+        if (m) {
+          return { x: parseFloat(m[1]), y: parseFloat(m[2]), rot: parseFloat(m[3]), scale: parseFloat(m[4]), opacity: parseFloat(el.style.opacity || '1') };
+        }
+      }
+      return { x: 0, y: 0, rot: 0, scale: 1, opacity: 1 };
+    }
+
+    function applyTransform(el: HTMLElement, t: { x: number; y: number; rot: number; scale: number; opacity: number }, immediate = false) {
+      const transform = `translate3d(${t.x}px, ${t.y}px, 0px) rotate(${t.rot}deg) scale(${t.scale})`;
+      currentTransforms.set(el, transform);
+      if (immediate) {
+        el.style.transition = 'none';
+        el.style.transform = transform;
+        el.style.opacity = String(t.opacity);
+        // 强制 reflow 让 immediate 生效
+        void el.offsetHeight;
+        el.style.transition = '';
+      } else {
+        el.style.transform = transform;
+        el.style.opacity = String(t.opacity);
+      }
+    }
+
+    function setZIndex(el: HTMLElement, z: number) {
+      el.style.zIndex = String(z);
+    }
+
+    // 初始布局
     layoutStack(true);
     updateIndicator();
     showHint('stacked', 4000);
 
-    // 给容器绑定键盘
     root.addEventListener('keydown', handleKey);
 
-    // 给每张牌绑定拖动 + 点击
     posters.forEach((p, i) => {
       setupPosterInteractions(p, i);
     });
 
-    // 容器空白区点击（横排态时点击空白 = 收回）
     root.addEventListener('click', (e) => {
       if (mode === 'expanded' && e.target === root) {
         collapse();
       }
     });
 
-    // 容器横排态拖动（切换 focus）
     setupContainerDrag(root);
 
-    // ---------- 布局：堆叠 ----------
     function layoutStack(immediate = false) {
       posters.forEach((p, i) => {
-        // dist: 该牌距离顶部位数（0 = 当前顶）
         const dist = (i - topIndex + n) % n;
         const z = n - dist;
-
         const y = dist * STACK.offsetY;
-        const rotate =
+        const rot =
           dist === 0
             ? 0
             : (i % 2 === 0 ? 1 : -1) *
@@ -176,29 +214,13 @@ const { posters, initialIndex = 0 } = Astro.props;
         const scale = 1 - dist * STACK.scaleStep;
         const opacity = Math.max(0.5, 1 - dist * STACK.opacityStep);
 
-        const tween = {
-          y,
-          x: 0,
-          rotate,
-          scale,
-          opacity,
-          duration: immediate ? 0 : 0.55,
-          ease: 'power3.out',
-          overwrite: 'auto' as const,
-        };
-
-        if (immediate) {
-          gsap.set(p, { ...tween, zIndex: z });
-        } else {
-          gsap.to(p, { ...tween, zIndex: z });
-        }
+        setZIndex(p, z);
+        applyTransform(p, { x: 0, y, rot, scale, opacity }, immediate);
       });
     }
 
-    // ---------- 布局：展开 ----------
     function layoutExpand() {
       posters.forEach((p, i) => {
-        // 环形距离：以 topIndex 为 0，左右各 ±1, ±2
         let dist = (i - topIndex + n) % n;
         if (dist > n / 2) dist -= n;
 
@@ -218,21 +240,11 @@ const { posters, initialIndex = 0 } = Astro.props;
               : EXPAND.side2Opacity;
         const z = dist === 0 ? 10 : 5 - absDist;
 
-        gsap.to(p, {
-          x: xOffset,
-          y: 0,
-          rotate: 0,
-          scale,
-          opacity,
-          zIndex: z,
-          duration: EXPAND.duration,
-          ease: 'power3.out',
-          overwrite: 'auto',
-        });
+        setZIndex(p, z);
+        applyTransform(p, { x: xOffset, y: 0, rot: 0, scale, opacity });
       });
     }
 
-    // ---------- 单张牌：拖动 + 点击 ----------
     function setupPosterInteractions(el: HTMLElement, index: number) {
       let isDown = false;
       let isHorizontal = false;
@@ -241,9 +253,9 @@ const { posters, initialIndex = 0 } = Astro.props;
       let dx = 0;
       let dy = 0;
       let moved = false;
+      let pointerId: number | null = null;
 
       el.addEventListener('pointerdown', (e) => {
-        // 只在堆叠态 + 当前顶部牌可拖
         if (mode !== 'stacked') return;
         if (index !== topIndex) return;
 
@@ -254,8 +266,17 @@ const { posters, initialIndex = 0 } = Astro.props;
         dx = 0;
         dy = 0;
         moved = false;
-        el.setPointerCapture(e.pointerId);
-        gsap.to(el, { scale: 1.05, duration: 0.2, overwrite: 'auto' });
+        pointerId = e.pointerId;
+        try {
+          el.setPointerCapture(e.pointerId);
+        } catch {
+          /* noop */
+        }
+        // 临时去掉 transition，让跟手流畅
+        el.classList.add('is-dragging');
+        el.style.transition = 'none';
+        const t = getTransform(el);
+        applyTransform(el, { ...t, scale: 1.05 });
       });
 
       el.addEventListener('pointermove', (e) => {
@@ -272,57 +293,44 @@ const { posters, initialIndex = 0 } = Astro.props;
           }
         }
 
-        // 跟手倾斜
-        const rotation = dx * 0.06;
-        gsap.set(el, {
-          x: dx,
-          y: dy * 0.3,
-          rotate: rotation,
-        });
+        const t = getTransform(el);
+        const rot = dx * 0.06;
+        applyTransform(el, { ...t, x: dx, y: dy * 0.3, rot });
       });
 
-      el.addEventListener('pointerup', (e) => {
+      el.addEventListener('pointerup', () => {
         if (!isDown) return;
         isDown = false;
-        try {
-          el.releasePointerCapture(e.pointerId);
-        } catch {
-          /* noop */
+        if (pointerId !== null) {
+          try {
+            el.releasePointerCapture(pointerId);
+          } catch {
+            /* noop */
+          }
+          pointerId = null;
         }
+        el.classList.remove('is-dragging');
+        el.style.transition = '';
 
         if (Math.abs(dx) > FLIP_THRESHOLD) {
           flipTopCard(dx > 0 ? 'right' : 'left');
         } else {
           // 回弹
-          gsap.to(el, {
-            x: 0,
-            y: 0,
-            rotate: 0,
-            scale: 1,
-            duration: 0.45,
-            ease: 'power3.out',
-            overwrite: 'auto',
-          });
+          const t = getTransform(el);
+          applyTransform(el, { ...t, x: 0, y: 0, rot: 0, scale: 1 });
         }
       });
 
       el.addEventListener('pointercancel', () => {
         isDown = false;
-        gsap.to(el, {
-          x: 0,
-          y: 0,
-          rotate: 0,
-          scale: 1,
-          duration: 0.3,
-          ease: 'power2.out',
-          overwrite: 'auto',
-        });
+        el.classList.remove('is-dragging');
+        el.style.transition = '';
+        const t = getTransform(el);
+        applyTransform(el, { ...t, x: 0, y: 0, rot: 0, scale: 1 });
       });
 
-      // 点击展开 / 收回
-      el.addEventListener('click', (e) => {
+      el.addEventListener('click', () => {
         if (moved) {
-          // 拖动过则不触发 click
           moved = false;
           return;
         }
@@ -334,34 +342,41 @@ const { posters, initialIndex = 0 } = Astro.props;
       });
     }
 
-    // ---------- 翻牌（左/右） ----------
     function flipTopCard(direction: 'left' | 'right') {
       const top = posters[topIndex];
       const targetX = direction === 'left' ? -window.innerWidth * 0.8 : window.innerWidth * 0.8;
-      const targetRotate = direction === 'left' ? -25 : 25;
+      const targetRot = direction === 'left' ? -25 : 25;
 
-      gsap.to(top, {
-        x: targetX,
-        rotate: targetRotate,
-        opacity: 0,
-        duration: 0.45,
-        ease: 'power2.in',
-        overwrite: 'auto',
-        onComplete: () => {
-          // topIndex 移位
-          topIndex =
-            direction === 'left'
-              ? (topIndex + 1) % n
-              : (topIndex - 1 + n) % n;
-          // 重置原顶牌 transform
-          gsap.set(top, { x: 0, y: 0, rotate: 0, opacity: 1, scale: 1 });
-          layoutStack();
-          updateIndicator();
-        },
-      });
+      // 用 is-flipping class 让 transition 用 cubic-bezier
+      top.classList.add('is-flipping');
+      const t = getTransform(top);
+      applyTransform(top, { ...t, x: targetX, rot: targetRot, opacity: 0 });
+
+      const onEnd = () => {
+        top.removeEventListener('transitionend', onEnd);
+        top.classList.remove('is-flipping');
+        // 移动 topIndex
+        topIndex =
+          direction === 'left'
+            ? (topIndex + 1) % n
+            : (topIndex - 1 + n) % n;
+        // 重置原顶牌 transform
+        currentTransforms.delete(top);
+        top.style.transition = 'none';
+        top.style.transform = '';
+        top.style.opacity = '';
+        void top.offsetHeight;
+        top.style.transition = '';
+        // 重新布局堆叠（让新顶牌的 layoutStack 覆盖 z-index / transform）
+        layoutStack(true);
+        updateIndicator();
+      };
+      top.addEventListener('transitionend', onEnd);
+
+      // 兜底：500ms 后强制结束（防止 transitionend 不触发）
+      window.setTimeout(onEnd, 500);
     }
 
-    // ---------- 展开 / 收回 ----------
     function expand() {
       mode = 'expanded';
       layoutExpand();
@@ -375,18 +390,21 @@ const { posters, initialIndex = 0 } = Astro.props;
       showHint('stacked', 4000);
     }
 
-    // ---------- 容器拖动：横排态切换 focus ----------
     function setupContainerDrag(container: HTMLElement) {
       let isDown = false;
       let startX = 0;
       let dx = 0;
+      let pointerId: number | null = null;
 
       container.addEventListener('pointerdown', (e) => {
         if (mode !== 'expanded') return;
-        // 拖牌上的 pointer 已被 poster 自己处理，这里不重复
+        // 拖牌上的 pointer 已被 poster 自己处理
+        const target = e.target as HTMLElement;
+        if (target.closest('[data-poster]')) return;
         isDown = true;
         startX = e.clientX;
         dx = 0;
+        pointerId = e.pointerId;
         try {
           container.setPointerCapture(e.pointerId);
         } catch {
@@ -399,13 +417,16 @@ const { posters, initialIndex = 0 } = Astro.props;
         dx = e.clientX - startX;
       });
 
-      container.addEventListener('pointerup', (e) => {
+      container.addEventListener('pointerup', () => {
         if (!isDown) return;
         isDown = false;
-        try {
-          container.releasePointerCapture(e.pointerId);
-        } catch {
-          /* noop */
+        if (pointerId !== null) {
+          try {
+            container.releasePointerCapture(pointerId);
+          } catch {
+            /* noop */
+          }
+          pointerId = null;
         }
 
         if (Math.abs(dx) > EXPAND_DRAG_THRESHOLD) {
@@ -418,20 +439,13 @@ const { posters, initialIndex = 0 } = Astro.props;
       });
     }
 
-    // ---------- 指示器 ----------
     function updateIndicator() {
-      const dots = container().querySelectorAll<HTMLElement>('[data-poster-dot]');
+      const dots = root.querySelectorAll<HTMLElement>('[data-poster-dot]');
       dots.forEach((d, i) => {
         d.classList.toggle('is-active', i === topIndex);
       });
     }
 
-    function container() {
-      return root;
-    }
-
-    // ---------- 提示 ----------
-    let hintTimer: number | undefined;
     function showHint(which: Mode, durationMs: number) {
       const hint = root.querySelector<HTMLElement>('[data-poster-hint]');
       if (!hint) return;
@@ -449,7 +463,6 @@ const { posters, initialIndex = 0 } = Astro.props;
       }, durationMs);
     }
 
-    // ---------- 键盘 ----------
     function handleKey(e: KeyboardEvent) {
       if (mode === 'stacked') {
         if (e.key === 'ArrowLeft') {
@@ -481,7 +494,6 @@ const { posters, initialIndex = 0 } = Astro.props;
     }
   }
 
-  // 初始化
   function initAll() {
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     document
@@ -489,9 +501,9 @@ const { posters, initialIndex = 0 } = Astro.props;
       .forEach(initStack);
   }
 
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initAll);
-  } else {
+  if (document.readyState === 'complete') {
     initAll();
+  } else {
+    window.addEventListener('load', () => setTimeout(initAll, 0));
   }
 </script>

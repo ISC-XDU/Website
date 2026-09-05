@@ -1,11 +1,16 @@
 // GSAP 插件注册 + 共享工具
-// 集中维护：避免每个组件都重新 import / register 插件
-// 调用方在需要时 import 本文件的 initGSAP() 以保证只注册一次。
+// GSAP 通过 BaseLayout 的 UMD <script> 加载到 window.gsap，
+// 这里直接用 window 上的实例（避免 GSAP 3.15 ESM 在 Vite inline 时的 TDZ 循环依赖）。
 
-import { gsap } from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { SplitText } from 'gsap/SplitText';
-import { MorphSVGPlugin } from 'gsap/MorphSVGPlugin';
+// 全局类型扩展：window 上挂载的 gsap 实例与插件
+declare global {
+  interface Window {
+    gsap: any;
+    ScrollTrigger: any;
+    SplitText: any;
+    MorphSVGPlugin: any;
+  }
+}
 
 let registered = false;
 
@@ -13,9 +18,10 @@ let registered = false;
  * 初始化 GSAP 插件注册。
  * 多次调用安全（幂等）；可从任意客户端入口调。
  */
-export function initGSAP(): typeof gsap {
+export function initGSAP(): any {
+  const gsap = window.gsap;
   if (registered) return gsap;
-  gsap.registerPlugin(ScrollTrigger, SplitText, MorphSVGPlugin);
+  gsap.registerPlugin(window.ScrollTrigger, window.SplitText, window.MorphSVGPlugin);
   registered = true;
 
   // 默认 easing
@@ -25,7 +31,6 @@ export function initGSAP(): typeof gsap {
 
 /**
  * 检测用户是否开启「减少动效」系统偏好。
- * 开启时所有滚动入场 / 装饰动画应直接显示。
  */
 export function prefersReducedMotion(): boolean {
   return (
@@ -44,5 +49,3 @@ export function revealImmediately(selector: string): void {
     el.style.transform = 'none';
   });
 }
-
-export { gsap, ScrollTrigger };

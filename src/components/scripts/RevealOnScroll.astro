@@ -5,16 +5,36 @@
 ---
 
 <script>
-  import { initGSAP, prefersReducedMotion, revealImmediately } from '@/scripts/gsap-setup';
-  import { SplitText } from 'gsap/SplitText';
-  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+  // GSAP 通过 BaseLayout UMD 加载到 window.gsap + window.ScrollTrigger + window.SplitText
+  // 完全不 import gsap-setup（避免 Vite ESM 链触发 GSAP 3.15 TDZ）
+  // 这里直接用 window 上的实例
 
   const REVEAL_SELECTOR = '[data-reveal]';
   const REVEAL_DELAY_ATTR = 'data-reveal-delay';
   const SPLIT_TITLE_SELECTOR = '[data-split-title]';
 
+  function getGsap() {
+    if (typeof window === 'undefined') return null;
+    return (window as any).gsap ?? null;
+  }
+
+  function prefersReducedMotion(): boolean {
+    return (
+      typeof window !== 'undefined' &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    );
+  }
+
+  function revealImmediately(selector: string): void {
+    document.querySelectorAll<HTMLElement>(selector).forEach((el) => {
+      el.style.opacity = '1';
+      el.style.transform = 'none';
+    });
+  }
+
   function initReveal() {
-    const gsap = initGSAP();
+    const gsap = getGsap();
+    if (!gsap) return; // UMD 还没加载好（理论上不可能，因为 inline script 在前）
     const reduce = prefersReducedMotion();
     const targets = Array.from(document.querySelectorAll<HTMLElement>(REVEAL_SELECTOR));
 
@@ -30,10 +50,10 @@
         el.style.transform = 'translateY(24px)';
       });
 
-      ScrollTrigger.batch(targets, {
+      (window as any).ScrollTrigger.batch(targets, {
         start: 'top 88%',
         once: true,
-        onEnter: (batch) => {
+        onEnter: (batch: any) => {
           gsap.to(batch, {
             opacity: 1,
             y: 0,
@@ -52,7 +72,8 @@
    * 适用于 [data-split-title] 标记的 H2 元素。
    */
   function initSplitTitles() {
-    const gsap = initGSAP();
+    const gsap = getGsap();
+    if (!gsap) return;
     const reduce = prefersReducedMotion();
     const targets = Array.from(document.querySelectorAll<HTMLElement>(SPLIT_TITLE_SELECTOR));
 
@@ -62,7 +83,7 @@
       // 跳过已经被 SplitText 处理过的（防止重复挂触发器）
       if (el.dataset.splitDone === '1') return;
 
-      const split = new SplitText(el, {
+      const split = new (window as any).SplitText(el, {
         type: 'chars',
         charsClass: 'gsap-title-char',
         tagName: 'span',
@@ -75,10 +96,10 @@
       // 也变成透明文本，但字符自己的 background 又是空的（父级 inline 渐变
       // 不会扩展到子元素）——结果字符 DOM 在但视觉不可见。
       // 凡是父级有 bg-clip-text 的字符，都把渐变类补到自己身上。
-      split.chars.forEach((char) => {
+      split.chars.forEach((char: any) => {
         const parent = char.parentElement;
         if (!parent?.classList.contains('bg-clip-text')) return;
-        parent.classList.forEach((cls) => {
+        parent.classList.forEach((cls: string) => {
           if (
             cls.startsWith('text-gradient-') ||
             cls === 'bg-clip-text' ||
