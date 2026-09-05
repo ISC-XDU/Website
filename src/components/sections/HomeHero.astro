@@ -139,103 +139,111 @@ import siteData from '@data/site.json';
 
 <script>
   import { gsap } from 'gsap';
+  import { SplitText } from 'gsap/SplitText';
 
   function initHeroAnimations() {
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (reduceMotion) return;
 
-    // 拆字工具：把字符串每个非空字符包成 <span class="gsap-char">。
-    // extraClass 用于把父级的视觉类（如 text-gradient-rainbow）下放到子级，
-    // 避免 inline-block 子元素继承父级 text-transparent 后没有自己的渐变背景导致不可见。
-    function splitToChars(parent: Element, raw: string, extraClass = '') {
-      const frag = document.createDocumentFragment();
-      for (const c of raw) {
-        if (!c.trim()) {
-          frag.appendChild(document.createTextNode(c));
-          continue;
-        }
-        const s = document.createElement('span');
-        s.className = `gsap-char inline-block ${extraClass}`.trim();
-        s.textContent = c;
-        frag.appendChild(s);
-      }
-      parent.replaceChildren(frag);
-    }
+    const titleEl = document.querySelector<HTMLElement>('[data-hero-title]');
+    if (!titleEl) return;
 
-    // 1. 拆"浪潮er"——把父级的渐变类下放到每个字符
-    const word = document.querySelector<HTMLElement>('[data-hero-word]');
-    if (word) {
-      splitToChars(
-        word,
-        word.textContent ?? '',
-        'text-gradient-rainbow bg-clip-text text-transparent font-extrabold'
-      );
-    }
+    // 用 SplitText 拆字符（tagName: 'span' 避免默认 div 破坏父级 inline-block 结构）
+    const split = new SplitText(titleEl, {
+      type: 'chars',
+      charsClass: 'gsap-char',
+      tagName: 'span',
+    });
 
-    // 2. 拆标题前半段"加入我们成为一名 "——纯文字，无渐变
-    const title = document.querySelector<HTMLElement>('[data-hero-title]');
-    if (title) {
-      const textNode = Array.from(title.childNodes).find(
-        (n) => n.nodeType === Node.TEXT_NODE && n.textContent?.trim()
-      );
-      if (textNode) {
-        const raw = textNode.textContent ?? '';
-        const span = document.createElement('span');
-        splitToChars(span, raw);
-        textNode.replaceWith(span);
-      }
-    }
+    // "浪潮er" 字符（位于 [data-hero-word] 内）需要独立渐变背景。
+    // SplitText 不会自动继承父级的 text-gradient-rainbow + bg-clip-text + text-transparent，
+    // 父级的 text-transparent 反而会通过 CSS 继承让字符也变成透明文本 → 看不见。
+    // 显式给 word 内的字符加 4 个类，让每个字符拥有自己的渐变 background。
+    document
+      .querySelectorAll<HTMLElement>('[data-hero-word] .gsap-char')
+      .forEach((el) => {
+        el.classList.add(
+          'text-gradient-rainbow',
+          'bg-clip-text',
+          'text-transparent',
+          'font-extrabold'
+        );
+      });
 
-    // 3. 时间线
+    // 时间线
     const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
 
-    // 浮动球轻微入场（先全部不可见，然后淡入 + 微位）
-    tl.from('[data-orb]', {
-      opacity: 0,
-      scale: 0.5,
-      duration: 1.2,
-      stagger: 0.15,
-    }, 0);
+    // 浮动球轻微入场
+    tl.from(
+      '[data-orb]',
+      {
+        opacity: 0,
+        scale: 0.5,
+        duration: 1.2,
+        stagger: 0.15,
+      },
+      0
+    );
 
-    // 标题字符：依次 y 从 40 落到 0
-    tl.from('.gsap-char', {
-      y: 50,
-      opacity: 0,
-      rotateX: -60,
-      duration: 0.7,
-      stagger: 0.04,
-    }, 0.2);
+    // 标题字符：依次 y 从 50 落到 0
+    tl.from(
+      split.chars,
+      {
+        y: 50,
+        opacity: 0,
+        rotateX: -60,
+        duration: 0.7,
+        stagger: 0.04,
+      },
+      0.2
+    );
 
-    // accent 下划线绘制（scaleX 0→1）
-    tl.from('[data-hero-accent] svg', {
-      scaleX: 0,
-      transformOrigin: 'left center',
-      duration: 0.8,
-    }, 0.9);
+    // accent 下划线绘制
+    tl.from(
+      '[data-hero-accent] svg',
+      {
+        scaleX: 0,
+        transformOrigin: 'left center',
+        duration: 0.8,
+      },
+      0.9
+    );
 
     // 副文
-    tl.from('[data-hero-subtitle]', {
-      opacity: 0,
-      y: 20,
-      duration: 0.6,
-    }, 1.0);
+    tl.from(
+      '[data-hero-subtitle]',
+      {
+        opacity: 0,
+        y: 20,
+        duration: 0.6,
+      },
+      1.0
+    );
 
     // CTA 按钮
-    tl.from('[data-hero-ctas] > *', {
-      opacity: 0,
-      y: 20,
-      scale: 0.9,
-      duration: 0.5,
-      stagger: 0.1,
-    }, 1.2);
+    tl.from(
+      '[data-hero-ctas] > *',
+      {
+        opacity: 0,
+        y: 20,
+        scale: 0.9,
+        duration: 0.5,
+        stagger: 0.1,
+      },
+      1.2
+    );
 
     // 招新状态条
-    tl.from('[data-hero-status]', {
-      opacity: 0,
-      duration: 0.4,
-    }, 1.5);
+    tl.from(
+      '[data-hero-status]',
+      {
+        opacity: 0,
+        duration: 0.4,
+      },
+      1.5
+    );
 
-    // 4. 浮动球持续呼吸（替换之前的 CSS float-slow/medium/fast，更平滑）
+    // 浮动球持续呼吸
     gsap.utils.toArray<HTMLElement>('[data-orb]').forEach((orb, i) => {
       gsap.to(orb, {
         y: 'random(-30, 30)',
@@ -248,7 +256,7 @@ import siteData from '@data/site.json';
       });
     });
 
-    // 5. 滚动指示器自动隐藏（滚过 100px 后淡出）
+    // 滚动指示器自动隐藏
     const indicator = document.querySelector<HTMLElement>('[data-scroll-indicator]');
     if (indicator) {
       window.addEventListener(

@@ -6,54 +6,93 @@
 
 <script>
   import { initGSAP, prefersReducedMotion, revealImmediately } from '@/scripts/gsap-setup';
+  import { SplitText } from 'gsap/SplitText';
   import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
   const REVEAL_SELECTOR = '[data-reveal]';
   const REVEAL_DELAY_ATTR = 'data-reveal-delay';
+  const SPLIT_TITLE_SELECTOR = '[data-split-title]';
 
   function initReveal() {
     const gsap = initGSAP();
     const reduce = prefersReducedMotion();
     const targets = Array.from(document.querySelectorAll<HTMLElement>(REVEAL_SELECTOR));
 
-    if (reduce || targets.length === 0) {
-      if (reduce) revealImmediately(REVEAL_SELECTOR);
+    if (reduce) {
+      revealImmediately(REVEAL_SELECTOR);
       return;
     }
 
-    // 初始隐藏：让 ScrollTrigger.batch 在元素进入视口时从 opacity 0/translateY 24 切入。
-    targets.forEach((el) => {
-      el.style.opacity = '0';
-      el.style.transform = 'translateY(24px)';
-    });
+    if (targets.length > 0) {
+      // 初始隐藏：让 ScrollTrigger.batch 在元素进入视口时从 opacity 0/translateY 24 切入。
+      targets.forEach((el) => {
+        el.style.opacity = '0';
+        el.style.transform = 'translateY(24px)';
+      });
 
-    ScrollTrigger.batch(targets, {
-      start: 'top 88%',
-      once: true,
-      onEnter: (batch) => {
-        gsap.to(batch, {
-          opacity: 1,
-          y: 0,
-          duration: 0.7,
-          stagger: 0.08,
-          ease: 'power2.out',
-          overwrite: true,
-          onStart: () => {
-            // 按 data-reveal-delay 微调
-            batch.forEach((el) => {
-              const delay = parseFloat((el as HTMLElement).getAttribute(REVEAL_DELAY_ATTR) ?? '0');
-              if (delay) (el as HTMLElement).style.transitionDelay = '';
-            });
-          },
-        });
-      },
+      ScrollTrigger.batch(targets, {
+        start: 'top 88%',
+        once: true,
+        onEnter: (batch) => {
+          gsap.to(batch, {
+            opacity: 1,
+            y: 0,
+            duration: 0.7,
+            stagger: 0.08,
+            ease: 'power2.out',
+            overwrite: true,
+          });
+        },
+      });
+    }
+  }
+
+  /**
+   * SplitText 字符级标题入场：滚动到标题位置时，字符依次 y 30 落到 0。
+   * 适用于 [data-split-title] 标记的 H2 元素。
+   */
+  function initSplitTitles() {
+    const gsap = initGSAP();
+    const reduce = prefersReducedMotion();
+    const targets = Array.from(document.querySelectorAll<HTMLElement>(SPLIT_TITLE_SELECTOR));
+
+    if (reduce || targets.length === 0) return;
+
+    targets.forEach((el) => {
+      // 跳过已经被 SplitText 处理过的（防止重复挂触发器）
+      if (el.dataset.splitDone === '1') return;
+
+      const split = new SplitText(el, {
+        type: 'chars',
+        charsClass: 'gsap-title-char',
+        tagName: 'span',
+      });
+      el.dataset.splitDone = '1';
+
+      gsap.from(split.chars, {
+        opacity: 0,
+        y: 30,
+        duration: 0.6,
+        stagger: 0.03,
+        ease: 'power2.out',
+        scrollTrigger: {
+          trigger: el,
+          start: 'top 85%',
+          once: true,
+        },
+      });
     });
+  }
+
+  function initAll() {
+    initReveal();
+    initSplitTitles();
   }
 
   // DOMContentLoaded 之前 Astro 会 defer ESM 脚本，这里直接跑也安全
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initReveal);
+    document.addEventListener('DOMContentLoaded', initAll);
   } else {
-    initReveal();
+    initAll();
   }
 </script>
