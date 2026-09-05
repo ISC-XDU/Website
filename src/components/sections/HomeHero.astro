@@ -144,8 +144,10 @@ import siteData from '@data/site.json';
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (reduceMotion) return;
 
-    // 拆字工具：把字符串每个非空字符包成 <span class="gsap-char">
-    function splitToChars(parent: Element, raw: string) {
+    // 拆字工具：把字符串每个非空字符包成 <span class="gsap-char">。
+    // extraClass 用于把父级的视觉类（如 text-gradient-rainbow）下放到子级，
+    // 避免 inline-block 子元素继承父级 text-transparent 后没有自己的渐变背景导致不可见。
+    function splitToChars(parent: Element, raw: string, extraClass = '') {
       const frag = document.createDocumentFragment();
       for (const c of raw) {
         if (!c.trim()) {
@@ -153,20 +155,24 @@ import siteData from '@data/site.json';
           continue;
         }
         const s = document.createElement('span');
-        s.className = 'gsap-char inline-block';
+        s.className = `gsap-char inline-block ${extraClass}`.trim();
         s.textContent = c;
         frag.appendChild(s);
       }
       parent.replaceChildren(frag);
     }
 
-    // 1. 拆"浪潮er"——直接 replaceChildren 整段内容
+    // 1. 拆"浪潮er"——把父级的渐变类下放到每个字符
     const word = document.querySelector<HTMLElement>('[data-hero-word]');
     if (word) {
-      splitToChars(word, word.textContent ?? '');
+      splitToChars(
+        word,
+        word.textContent ?? '',
+        'text-gradient-rainbow bg-clip-text text-transparent font-extrabold'
+      );
     }
 
-    // 2. 拆标题前半段"加入我们成为一名 "——找到 textNode 整体 replaceWith
+    // 2. 拆标题前半段"加入我们成为一名 "——纯文字，无渐变
     const title = document.querySelector<HTMLElement>('[data-hero-title]');
     if (title) {
       const textNode = Array.from(title.childNodes).find(
