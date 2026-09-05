@@ -144,17 +144,29 @@ import siteData from '@data/site.json';
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (reduceMotion) return;
 
-    // 1. 拆字："浪潮er" → 每个字符包 <span class="gsap-char">
-    const word = document.querySelector<HTMLElement>('[data-hero-word]');
-    if (word) {
-      const text = word.textContent ?? '';
-      word.innerHTML = text
-        .split('')
-        .map((c) => `<span class="gsap-char inline-block">${c}</span>`)
-        .join('');
+    // 拆字工具：把字符串每个非空字符包成 <span class="gsap-char">
+    function splitToChars(parent: Element, raw: string) {
+      const frag = document.createDocumentFragment();
+      for (const c of raw) {
+        if (!c.trim()) {
+          frag.appendChild(document.createTextNode(c));
+          continue;
+        }
+        const s = document.createElement('span');
+        s.className = 'gsap-char inline-block';
+        s.textContent = c;
+        frag.appendChild(s);
+      }
+      parent.replaceChildren(frag);
     }
 
-    // 2. 标题其他字符（"加入我们成为一名 "）也按字拆
+    // 1. 拆"浪潮er"——直接 replaceChildren 整段内容
+    const word = document.querySelector<HTMLElement>('[data-hero-word]');
+    if (word) {
+      splitToChars(word, word.textContent ?? '');
+    }
+
+    // 2. 拆标题前半段"加入我们成为一名 "——找到 textNode 整体 replaceWith
     const title = document.querySelector<HTMLElement>('[data-hero-title]');
     if (title) {
       const textNode = Array.from(title.childNodes).find(
@@ -162,15 +174,9 @@ import siteData from '@data/site.json';
       );
       if (textNode) {
         const raw = textNode.textContent ?? '';
-        const html = raw
-          .split('')
-          .map((c) => (c.trim() ? `<span class="gsap-char inline-block">${c}</span>` : c))
-          .join('');
-        textNode.textContent = ''; // 不行——要 replaceWith
         const span = document.createElement('span');
-        span.innerHTML = html;
-        title.insertBefore(span, title.firstChild);
-        title.removeChild(title.childNodes[1]!); // 删原 textNode 留下的空位
+        splitToChars(span, raw);
+        textNode.replaceWith(span);
       }
     }
 
@@ -185,13 +191,6 @@ import siteData from '@data/site.json';
       stagger: 0.15,
     }, 0);
 
-    // eyebrow chip
-    tl.from('[data-hero-title]', {
-      opacity: 0,
-      y: -10,
-      duration: 0.5,
-    }, 0.2);
-
     // 标题字符：依次 y 从 40 落到 0
     tl.from('.gsap-char', {
       y: 50,
@@ -199,7 +198,7 @@ import siteData from '@data/site.json';
       rotateX: -60,
       duration: 0.7,
       stagger: 0.04,
-    }, 0.3);
+    }, 0.2);
 
     // accent 下划线绘制（scaleX 0→1）
     tl.from('[data-hero-accent] svg', {
