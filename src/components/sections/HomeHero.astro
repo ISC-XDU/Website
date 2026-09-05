@@ -52,7 +52,7 @@ import siteData from '@data/site.json';
             data-hero-word
           >浪潮er</span>
           <svg
-            class="absolute -bottom-2 left-0 w-full"
+            class="absolute -bottom-3 left-0 w-full"
             viewBox="0 0 200 8"
             preserveAspectRatio="none"
             aria-hidden="true"
@@ -61,7 +61,7 @@ import siteData from '@data/site.json';
               d="M0 4 Q 50 0, 100 4 T 200 4"
               fill="none"
               stroke="url(#hero-gradient)"
-              stroke-width="3"
+              stroke-width="5"
               stroke-linecap="round"
               data-hero-accent-path
             />
@@ -199,18 +199,25 @@ import siteData from '@data/site.json';
       0.2
     );
 
-    // accent 下划线：先直线 scaleX 0→1 绘制，再 morphSVG 直线 → 波浪
+    // accent 下划线：先 stroke-dasharray 绘制直线（标准 SVG 描边动画），
+    // 再 morphSVG 直线 → 波浪
     const accentPath = document.querySelector<SVGPathElement>('[data-hero-accent-path]');
     const WAVE_PATH = 'M0 4 Q 50 0, 100 4 T 200 4';
     const STRAIGHT_PATH = 'M0 4 L 200 4';
     if (accentPath) {
+      // 把 path 设为直线，并把整条线"藏"在 dashoffset 里待绘制
       accentPath.setAttribute('d', STRAIGHT_PATH);
-      tl.fromTo(
+      const pathLength = accentPath.getTotalLength();
+      accentPath.style.strokeDasharray = String(pathLength);
+      accentPath.style.strokeDashoffset = String(pathLength);
+
+      // 1) 直线绘制：dashoffset 从 pathLength 动画到 0
+      tl.to(
         accentPath,
-        { scaleX: 0, transformOrigin: 'left center' },
-        { scaleX: 1, duration: 0.45, ease: 'power2.out' },
+        { strokeDashoffset: 0, duration: 0.45, ease: 'power2.out' },
         0.9
       );
+      // 2) 直线 → 波浪 形变
       tl.to(
         accentPath,
         { morphSVG: WAVE_PATH, duration: 0.65, ease: 'power2.inOut' },
