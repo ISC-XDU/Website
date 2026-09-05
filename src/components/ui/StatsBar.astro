@@ -6,34 +6,99 @@ interface Stat {
   value: number | string;
   label: string;
   color?: 'primary' | 'danger' | 'success' | 'warning';
+  icon?: string;
 }
 
 const colorMap = {
-  primary: 'text-inspur-600',
-  danger: 'text-xidian-500',
-  success: 'text-emerald-600',
-  warning: 'text-amber-600',
+  primary: 'from-inspur-500 to-cyan-500',
+  danger: 'from-xidian-500 to-orange-500',
+  success: 'from-emerald-500 to-teal-500',
+  warning: 'from-amber-500 to-rose-500',
 };
 
 const stats: Stat[] = [
-  { value: siteData.stats.members, label: '成员人数', color: 'primary' },
-  { value: siteData.stats.departments, label: '部门数量', color: 'danger' },
-  { value: siteData.founded, label: '成立时间', color: 'warning' },
-  { value: siteData.stats.techGroups, label: '技术组别', color: 'success' },
+  { value: siteData.stats.members, label: '位同学', color: 'primary', icon: '👥' },
+  { value: siteData.stats.departments, label: '大部门', color: 'danger', icon: '🏛' },
+  { value: siteData.founded, label: '年成立', color: 'warning', icon: '🚀' },
+  { value: siteData.stats.techGroups, label: '个技术组', color: 'success', icon: '⚡' },
 ];
 ---
 
-<Section background="muted" containerClass="!py-8" reveal>
-  <div class="grid grid-cols-2 md:grid-cols-4 gap-6 text-center md:text-left">
+<Section background="default" containerClass="!py-16">
+  <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
     {
-      stats.map((s) => (
-        <div>
-          <div class:list={['text-3xl md:text-4xl font-display font-bold', colorMap[s.color ?? 'primary']]}>
-            {s.value}
+      stats.map((s, i) => (
+        <div
+          class="glass glass-hover relative overflow-hidden p-6 md:p-8 rounded-2xl group"
+          data-stat-card
+          style={`animation-delay: ${i * 0.1}s`}
+        >
+          {/* 背景渐变球 */}
+          <div
+            class:list={[
+              'absolute -top-12 -right-12 w-32 h-32 rounded-full bg-gradient-to-br opacity-20 blur-2xl group-hover:opacity-40 transition-opacity',
+              colorMap[s.color ?? 'primary'],
+            ]}
+            aria-hidden="true"
+          ></div>
+
+          <div class="relative">
+            <div class="text-3xl mb-2" aria-hidden="true">{s.icon}</div>
+            <div
+              class:list={[
+                'text-4xl md:text-5xl font-display font-bold bg-gradient-to-br bg-clip-text text-transparent',
+                colorMap[s.color ?? 'primary'],
+              ]}
+              data-stat-value={s.value}
+            >
+              {s.value}
+            </div>
+            <div class="mt-2 text-sm text-ink-600 dark:text-ink-300 font-medium">
+              {s.label}
+            </div>
           </div>
-          <div class="mt-1 text-sm text-ink-500">{s.label}</div>
         </div>
       ))
     }
   </div>
 </Section>
+
+<script>
+  // 数字 count-up 动画：进入视口时从 0 滚到目标值
+  function animateCount(el: HTMLElement) {
+    const target = Number(el.dataset.statValue) || 0;
+    const duration = 1600;
+    const start = performance.now();
+    const isInteger = Number.isInteger(target);
+
+    function frame(now: number) {
+      const elapsed = now - start;
+      const progress = Math.min(elapsed / duration, 1);
+      // ease-out cubic
+      const eased = 1 - Math.pow(1 - progress, 3);
+      const current = target * eased;
+      el.textContent = isInteger
+        ? Math.floor(current).toLocaleString()
+        : current.toFixed(1);
+      if (progress < 1) requestAnimationFrame(frame);
+      else el.textContent = isInteger ? target.toLocaleString() : target.toString();
+    }
+    requestAnimationFrame(frame);
+  }
+
+  if ('IntersectionObserver' in window) {
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) {
+            const el = entry.target as HTMLElement;
+            animateCount(el);
+            io.unobserve(el);
+          }
+        }
+      },
+      { threshold: 0.3 }
+    );
+    document.querySelectorAll<HTMLElement>('[data-stat-value]').forEach((el) => io.observe(el));
+  }
+</script>
