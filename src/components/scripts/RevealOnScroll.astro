@@ -69,6 +69,26 @@
       });
       el.dataset.splitDone = '1';
 
+      // 修复渐变透明继承 bug：原模板里 'text-gradient-rainbow + bg-clip-text
+      // + text-transparent' 是在 inline 父级 span 上，SplitText 拆出的字符是
+      // inline-block 子元素，父级的 color: transparent 通过 CSS 继承让字符
+      // 也变成透明文本，但字符自己的 background 又是空的（父级 inline 渐变
+      // 不会扩展到子元素）——结果字符 DOM 在但视觉不可见。
+      // 凡是父级有 bg-clip-text 的字符，都把渐变类补到自己身上。
+      split.chars.forEach((char) => {
+        const parent = char.parentElement;
+        if (!parent?.classList.contains('bg-clip-text')) return;
+        parent.classList.forEach((cls) => {
+          if (
+            cls.startsWith('text-gradient-') ||
+            cls === 'bg-clip-text' ||
+            cls === 'text-transparent'
+          ) {
+            char.classList.add(cls);
+          }
+        });
+      });
+
       gsap.from(split.chars, {
         opacity: 0,
         y: 30,
