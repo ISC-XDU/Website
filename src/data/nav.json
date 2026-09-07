@@ -9,6 +9,6 @@
     ]
   },
   { "label": "成员", "href": "/members" },
-  { "label": "博客", "href": "/blog/site/index.html" },
+  { "label": "博客", "href": "https://blog.xdu-inspur.cn" },
   { "label": "致谢", "href": "/thanks" }
 ]
