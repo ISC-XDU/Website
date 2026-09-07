@@ -45,7 +45,8 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
     {noindex && <meta name="robots" content="noindex,nofollow" />}
 
     <link rel="canonical" href={canonicalURL} />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    {/* 标签页图标：浪潮俱乐部"飞人"社团图标（区别于浪潮集团 LOGO） */}
+    <link rel="icon" type="image/png" href="/img/inspur/inspur_logo.png" />
 
     {/* 深色模式初始化（必须在 body 渲染前执行，避免主题闪烁） */}
     <script is:inline>
