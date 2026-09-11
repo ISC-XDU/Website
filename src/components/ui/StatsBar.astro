@@ -10,10 +10,13 @@ interface Stat {
 }
 
 const colorMap = {
-  primary: 'from-inspur-500 to-cyan-500',
-  danger: 'from-xidian-500 to-orange-500',
-  success: 'from-emerald-500 to-teal-500',
-  warning: 'from-amber-500 to-rose-500',
+  // 实色方案：放弃渐变文字（bg-clip-text + text-transparent + 多 dark:from
+  // 组合在 Tailwind selector darkMode 下不可靠），改用直接 text-色 + dark: 切换。
+  // 浅色用 -500（中等饱和度配白底），深色用 -300（更亮配深色背景，对比清晰）。
+  primary: 'text-inspur-500 dark:text-inspur-300',
+  danger: 'text-xidian-500 dark:text-xidian-300',
+  success: 'text-emerald-500 dark:text-emerald-300',
+  warning: 'text-amber-500 dark:text-amber-300',
 };
 
 // 用于 SVG 角标 stroke="currentColor" 的文本色映射
@@ -70,7 +73,7 @@ const stats: Stat[] = [
             <div class="text-3xl mb-2" aria-hidden="true">{s.icon}</div>
             <div
               class:list={[
-                'text-4xl md:text-5xl font-display font-bold bg-gradient-to-br bg-clip-text text-transparent',
+                'text-4xl md:text-5xl font-display font-bold',
                 colorMap[s.color ?? 'primary'],
               ]}
               data-stat-value={s.value}
