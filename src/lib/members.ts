@@ -41,7 +41,7 @@ export function getCount(): number {
 export function getRole(m: Member): string | null {
   if (!m.bio) return null;
   const match = m.bio.match(
-    /西电浪潮俱乐部(?:\d{4}-?\d{4}届[、，])*\d{4}-?\d{4}届([^，。、\s]+?)(?:[，。、]|$)/
+    /西电浪潮俱乐部(?:\d{4}(?:-\d{4})?届[、，])*\d{4}(?:-\d{4})?届([^，。、\s]+?)(?:[，。、]|$)/
   );
   if (!match) return null;
   const role = match[1].trim();
